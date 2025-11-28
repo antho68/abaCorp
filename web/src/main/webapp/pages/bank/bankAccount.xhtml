@@ -1,0 +1,258 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="jakarta.faces.core" template="/WEB-INF/template.xhtml" xmlns:p="primefaces"
+                xmlns:h="http://java.sun.com/jsf/html">
+
+    <f:metadata>
+        <ui:param name="controller" value="#{bankAccountController}"/>
+        <ui:param name="crudForm" value="#{bankAccountForm}"/>
+    </f:metadata>
+
+    <ui:define name="content">
+        <h:form id="form" prependId="false">
+
+            <p:dataTable value="#{controller.datas}" var="dto" id="dataTable" scrollHeight="700"
+                         widgetVar="dataTable" rowIndexVar="tableIndex" scrollable="true" paginator="false"
+                         multiViewState="true" lazy="false" selectionMode="single"
+                         selection="#{controller.selectedData}" rowKey="#{dto.id}">
+
+                <f:facet name="header">
+                    <p:commandButton value="Nouveau" icon="pi pi-plus"
+                                     title="Nouveau" alt="Nouveau"
+                                     actionListener="#{controller.addActionListener}"/>
+                    <p:commandButton value="Nouveau depuis un fichier" icon="pi pi-plus"
+                                     title="Nouveau depuis un fichier" alt="Nouveau depuis un fichier"
+                                     actionListener="#{controller.addFromFileActionListener}"
+                                     style="margin-left:10px;"/>
+                </f:facet>
+
+                <p:ajax event="rowDblselect" listener="#{controller.setEditSelectedDto(controller.selectedData)}"
+                        resetValues="true"/>
+
+                <p:column headerText="ID" width="20">
+                    <h:outputText value="#{dto.id}"/>
+                </p:column>
+
+                <p:column headerText="Nom">
+                    <h:outputText value="#{dto.name}"/>
+                </p:column>
+
+                <p:column headerText="Description">
+                    <h:outputText value="#{dto.description}"/>
+                </p:column>
+
+                <p:column headerText="Code" width="200">
+                    <h:outputText value="#{dto.code}"/>
+                </p:column>
+
+                <p:column headerText="Type" width="120">
+                    <h:outputText value="#{dto.type}"/>
+                </p:column>
+
+                <p:column styleClass="align_left" exportable="false" toggleable="false"
+                          style="width:80px">
+                    <p:commandLink onclick="selectRow('dataTable', #{tableIndex});"
+                                   title="Modifier">
+                        <i class="pi pi-fw pi-pencil" aria-hidden="true"/>
+                        <f:setPropertyActionListener value="#{dto}"
+                                                     target="#{controller.editSelectedDto}"/>
+                    </p:commandLink>
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+
+        <h:form id="crudDialogForm" prependId="false">
+            <p:dialog id="crudDialog" widgetVar="crudDialog" modal="true" dynamic="true" closable="true"
+                      header="Utilisateur" showEffect="clip" hideEffect="clip" closeOnEscape="false">
+
+                <p:ajax event="close" listener="#{controller.handleCrudDialogClose}"
+                        update=":form:dataTable" oncomplete="autoScroll();"/>
+
+                <p:panelGrid id="crudDialogPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="ID"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{crudForm.id}"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="User-ID"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{crudForm.userId}"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Nom"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{crudForm.name}" required="true">
+                                <p:ajax listener="#{crudForm.formChanged}" event="change"/>
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Description"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{crudForm.description}">
+                                <p:ajax listener="#{crudForm.formChanged}" event="change"/>
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Code"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{crudForm.code}" required="true">
+                                <p:ajax listener="#{crudForm.formChanged}" event="change"/>
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Type"/>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu value="#{crudForm.accountType}">
+                                <f:selectItems value="#{crudForm.accountTypes}" var="type"
+                                               itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                <p:ajax listener="#{crudForm.formChanged}" event="itemSelect"/>
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <h:panelGroup layout="block" style="text-align:right;white-space:nowrap">
+                        <p:commandButton value="Sauvegarder" title="Sauvegarder" alt="Sauvegarder"
+                                         oncomplete="hideDialog('crudDialogBui');"
+                                         actionListener="#{controller.saveFormActionListener}"
+                                         onstart="showDialog('crudDialogBui');"
+                                         update=":form:dataTable crudDialogPanel"/>
+
+                        <p:commandButton value="Réinitialiser" title="Réinitialiser" alt="Réinitialiser"
+                                         actionListener="#{controller.resetFormActionListener}"
+                                         update=":crudDialogPanel" immediate="true" process="@this">
+                            <f:param name="skipvalidation" value="1"/>
+                            <p:resetInput target=":crudDialogPanel"/>
+                        </p:commandButton>
+
+                        <p:commandButton value="Fermer" immediate="true"
+                                         action="#{controller.handleCrudDialogClose}"
+                                         title="Fermer" alt="Fermer">
+                            <f:param name="skipvalidation" value="1"/>
+                        </p:commandButton>
+                    </h:panelGroup>
+                </f:facet>
+            </p:dialog>
+
+            <p:blockUI block="crudDialog" widgetVar="crudDialogBui" id="crudDialogBui">
+                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                <h:outputText value="Veuillez patienter" style="white-space: nowrap;"/>
+            </p:blockUI>
+        </h:form>
+
+        <ui:include src="/pages/include/closeConfirmationDialog.xhtml">
+            <ui:param name="targetDialog" value="crudDialog"/>
+        </ui:include>
+
+        <h:form id="addFromFileDialogForm" prependId="false">
+            <p:dialog id="addFromFileDialog" widgetVar="addFromFileDialog" modal="true" dynamic="true" closable="true"
+                      header="Importer depuis un fichier" showEffect="clip" hideEffect="clip" closeOnEscape="false">
+                <p:panelGrid id="addFromFileDialogPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Fichier:"/>
+                        </p:column>
+                        <p:column>
+                            <p:fileUpload value="#{controller.file}" listener="#{controller.handleFileUpload}"
+                                          mode="simple" skinSimple="true" auto="true" update="addFromFileDialogPanel"
+                                          process="@this" rendered="#{controller.inputStream == null}"/>
+                            <p:outputLabel value="Fichier présent" rendered="#{controller.inputStream != null}"/>
+
+                            <p:commandButton value="Analyser les données" action="#{controller.processDataFile}"
+                                             styleClass="mt-3 ui-button-outlined block"
+                                             update="addFromFileDialogPanel"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:dataTable value="#{controller.decryptedBankAccounts}" var="dto"
+                                         scrollHeight="300" scrollable="true" styleClass="dataTableWithSmallPadding"
+                                         id="decryptedBankAccountTable" widgetVar="decryptedBankAccountTable"
+                                         rowIndexVar="decryptedBankAccountTableIndex" rowKey="#{dto.id}"
+                                         multiViewState="true" lazy="false" selectionMode="single">
+                                <p:column headerText="ID" width="20">
+                                    <h:outputText value="#{dto.id}"/>
+                                </p:column>
+
+                                <p:column headerText="Nom">
+                                    <p:inputText value="#{dto.name}" styleClass="col100"/>
+                                </p:column>
+
+                                <p:column headerText="Description">
+                                    <p:inputText value="#{dto.description}" styleClass="col100"/>
+                                </p:column>
+
+                                <p:column headerText="Code" width="200">
+                                    <h:outputText value="#{dto.code}" styleClass="col100"/>
+                                </p:column>
+
+                                <p:column headerText="Type" width="120">
+                                    <p:selectOneMenu value="#{dto.type}">
+                                        <f:selectItems value="#{crudForm.accountTypes}" var="type"
+                                                       itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column width="50">
+                                    <p:commandLink onclick="selectRow('decryptedBankAccountTable', #{decryptedBankAccountTableIndex});"
+                                                   title="Supprimer" update="decryptedBankAccountTable">
+                                        <i class="pi pi-fw pi-times" aria-hidden="true"/>
+                                        <f:setPropertyActionListener value="#{dto}"
+                                                                     target="#{controller.deleteImportData}"/>
+                                    </p:commandLink>
+                                </p:column>
+
+                            </p:dataTable>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <h:panelGroup layout="block" style="text-align:right;white-space:nowrap">
+                        <p:commandButton value="Importer" title="Importer" alt="Importer"
+                                         oncomplete="hideDialog('addFromFileDialog');"
+                                         actionListener="#{controller.importActionListener}"
+                                         onstart="showDialog('addFromFileDialog');"
+                                         update=":form:dataTable addFromFileDialogPanel"/>
+
+                        <p:commandButton value="Fermer" immediate="true"
+                                         oncomplete="hideDialog('addFromFileDialog');"
+                                         title="Fermer" alt="Fermer">
+                            <f:param name="skipvalidation" value="1"/>
+                        </p:commandButton>
+                    </h:panelGroup>
+                </f:facet>
+            </p:dialog>
+
+            <p:blockUI block="addFromFileDialog" widgetVar="addFromFileDialogBui" id="addFromFileDialogBui">
+                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                <h:outputText value="Veuillez patienter" style="white-space: nowrap;"/>
+            </p:blockUI>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

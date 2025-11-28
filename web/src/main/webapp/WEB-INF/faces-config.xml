@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="https://jakarta.ee/xml/ns/jakartaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                                  https://jakarta.ee/xml/ns/jakartaee/web-facesconfig_3_0.xsd"
+              version="3.0">
+
+    <name>abaCorpWeb</name>
+
+    <lifecycle>
+        <phase-listener>com.aba.corp.web.AuthPhaseListener</phase-listener>
+    </lifecycle>
+
+</faces-config>

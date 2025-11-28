@@ -1,0 +1,218 @@
+:root {
+    --title-text-color: #395995;
+    --page-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.col1 {
+    width: 1%;
+}
+
+.col2 {
+    width: 2%;
+}
+
+.col3 {
+    width: 3%;
+}
+
+.col5 {
+    width: 5%;
+}
+
+.col6 {
+    width: 6%;
+}
+
+.col8 {
+    width: 8%;
+}
+
+.col9 {
+    width: 9%;
+}
+
+.col10 {
+    width: 10%;
+}
+
+.col11 {
+    width: 11%;
+}
+
+.col12 {
+    width: 12%;
+}
+
+.col13 {
+    width: 13%;
+}
+
+.col14 {
+    width: 14%;
+}
+
+.col15 {
+    width: 15%;
+}
+
+.col16 {
+    width: 16%;
+}
+
+.col17 {
+    width: 17%;
+}
+
+.col18 {
+    width: 18%;
+}
+
+.col20 {
+    width: 20%;
+}
+
+.col200px {
+    width: 200px;
+}
+
+.col21 {
+    width: 21%;
+}
+
+.col22 {
+    width: 22%;
+}
+
+.col23 {
+    width: 23%;
+}
+
+.col24 {
+    width: 24%;
+}
+
+.col25 {
+    width: 25%;
+}
+
+.col30 {
+    width: 30%;
+}
+
+.col31 {
+    width: 31%;
+}
+
+.col32 {
+    width: 32%;
+}
+
+.col33 {
+    width: 33%;
+}
+
+.col33_33 {
+    width: 33.33%;
+}
+
+.col34 {
+    width: 34%;
+}
+
+.col35 {
+    width: 35%;
+}
+
+.col39 {
+    width: 39%;
+}
+
+.col40 {
+    width: 40%;
+}
+
+.col41 {
+    width: 41%;
+}
+
+.col45 {
+    width: 45%;
+}
+
+.col50 {
+    width: 50%;
+}
+
+.col55 {
+    width: 55%;
+}
+
+.col59 {
+    width: 59%;
+}
+
+.col60 {
+    width: 60%;
+}
+
+.col66 {
+    width: 66%;
+}
+
+.col66_66 {
+    width: 66.66%;
+}
+
+.col70 {
+    width: 70%;
+}
+
+.col75 {
+    width: 75%;
+}
+
+.col80 {
+    width: 80%;
+}
+
+.col85 {
+    width: 85%;
+}
+
+.col90 {
+    width: 90%;
+}
+
+.col95 {
+    width: 95%;
+}
+
+.col99 {
+    width: 99%;
+}
+
+.col100 {
+    width: 100%;
+}
+
+.ui-inputfield
+{
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+}
+
+.floatingLabel
+{
+
+}
+
+.whitePanelGrid > tbody > tr > td.ui-panelgrid-cell
+{
+    border: none;
+}
+
+.dataTableWithSmallPadding > tbody > tr.ui-datatable-selectable > td
+{
+    padding: 0.2rem 0.5rem;
+}

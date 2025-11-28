@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="primefaces"
+>
+<h:head>
+    <f:facet name="first">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+    </f:facet>
+
+    <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+</h:head>
+
+<h:body>
+    <div class="login-container">
+        <div class="login-card">
+            <h:form class="login-form" id="loginForm" prependId="false">
+                <div class="input-group">
+                    <p:outputLabel for="username" value="Nom d'utilisateur"/>
+                </div>
+                <div class="input-group">
+                    <p:inputText id="username" value="#{loginController.username}" required="true"
+                                 styleClass="col100"/>
+                    <p:message for="username" display="icon"/>
+                </div>
+
+                <div class="input-group">
+                    <p:outputLabel for="email" value="E-mail"/>
+                </div>
+                <div class="input-group">
+                    <p:inputText id="email" value="#{loginController.email}" required="true"
+                                 styleClass="col100"/>
+                    <p:message for="email" display="icon"/>
+                </div>
+
+                <div class="input-group">
+                    <p:outputLabel for="password" value="Mot de passe"/>
+                </div>
+                <div class="input-group">
+                    <p:password id="password" value="#{loginController.password}"
+                                toggleMask="true" redisplay="true"
+                                required="true" styleClass="col100"/>
+                    <p:message for="password" display="icon"/>
+                </div>
+
+                <p:commandButton value="Crée mon comtpe" icon="pi pi-sign-in"
+                                 actionListener="#{loginController.goBackToLogin}"
+                                 update="@form" styleClass="w-full p-button-primary"/>
+                <p:commandButton value="Crée mon comtpe" icon="pi pi-sign-in"
+                                 actionListener="#{loginController.signIn}"
+                                 update="@form" styleClass="w-full p-button-primary"/>
+            </h:form>
+
+        </div>
+    </div>
+
+    <h:outputStylesheet id="abCorpCss" library="css" name="abaCorp.css"/>
+    <h:outputStylesheet id="loginStyleCss" library="css" name="loginStyle.css"/>
+</h:body>
+</html>

@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="jakarta.faces.core" template="/WEB-INF/template.xhtml" xmlns:p="primefaces"
+                xmlns:h="http://java.sun.com/jsf/html">
+
+    <f:metadata>
+        <ui:param name="controller" value="#{userController}"/>
+        <ui:param name="crudForm" value="#{userForm}"/>
+    </f:metadata>
+
+    <ui:define name="content">
+        <h:form id="form" prependId="false">
+
+            <p:dataTable value="#{controller.datas}" var="dto" id="dataTable"
+                         widgetVar="dataTable" rowIndexVar="tableIndex"
+                         multiViewState="true" lazy="false" selectionMode="single"
+                         selection="#{controller.selectedData}" rowKey="#{dto.id}">
+
+                <p:ajax event="rowDblselect" listener="#{controller.setEditSelectedDto(controller.selectedData)}"
+                        resetValues="true"/>
+
+                <p:column headerText="ID">
+                    <h:outputText value="#{dto.id}"/>
+                </p:column>
+
+                <p:column headerText="Email">
+                    <h:outputText value="#{dto.email}"/>
+                </p:column>
+
+                <p:column headerText="Type de Role">
+                    <h:outputText value="#{dto.roleType}"/>
+                </p:column>
+
+                <p:column headerText="Last login">
+                    <h:outputText value="#{dto.updatedAtFormatted}"/>
+                </p:column>
+
+                <p:column styleClass="align_left" exportable="false" toggleable="false"
+                          style="width:80px">
+                    <p:commandLink onclick="selectRow('dataTable', #{tableIndex});"
+                                   title="Modifier">
+                        <i class="pi pi-fw pi-pencil" aria-hidden="true"/>
+                        <f:setPropertyActionListener value="#{dto}"
+                                                     target="#{controller.editSelectedDto}"/>
+                    </p:commandLink>
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+
+        <h:form id="crudDialogForm" prependId="false">
+            <p:dialog id="crudDialog" widgetVar="crudDialog" modal="true" dynamic="true" closable="true"
+                      header="Utilisateur" showEffect="clip" hideEffect="clip" closeOnEscape="false">
+
+                <p:ajax event="close" listener="#{controller.handleCrudDialogClose}"
+                        update=":form:dataTable" oncomplete="autoScroll();"/>
+
+                <p:panelGrid id="crudDialogPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="User-ID"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{crudForm.id}"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Name"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{crudForm.name}"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Email"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{crudForm.email}">
+                                <p:ajax listener="#{crudForm.inputChanged}" event="change"/>
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Role"/>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu value="#{crudForm.roleType}" >
+                                <f:selectItems value="#{crudForm.roleTypes}"/>
+                                <p:ajax listener="#{crudForm.inputChanged}" event="itemSelect"/>
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <h:panelGroup layout="block" style="text-align:right;white-space:nowrap">
+                        <p:commandButton value="Sauvegarder" title="Sauvegarder" alt="Sauvegarder"
+                                         oncomplete="hideDialog('crudDialogBui');"
+                                         actionListener="#{controller.saveFormActionListener}"
+                                         onstart="showDialog('crudDialogBui');"
+                                         update=":form:dataTable crudDialogPanel"/>
+
+                        <p:commandButton value="Réinitialiser" title="Réinitialiser" alt="Réinitialiser"
+                                         actionListener="#{controller.resetFormActionListener}"
+                                         update=":crudDialogPanel" immediate="true" process="@this">
+                            <f:param name="skipvalidation" value="1"/>
+                            <p:resetInput target=":crudDialogPanel"/>
+                        </p:commandButton>
+
+                        <p:commandButton value="Fermer" immediate="true"
+                                         action="#{controller.handleCrudDialogClose}"
+                                         title="Fermer" alt="Fermer">
+                            <f:param name="skipvalidation" value="1"/>
+                        </p:commandButton>
+                    </h:panelGroup>
+                </f:facet>
+            </p:dialog>
+
+            <p:blockUI block="crudDialog" widgetVar="crudDialogBui" id="crudDialogBui">
+                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                <h:outputText value="Veuillez patienter" style="white-space: nowrap;"/>
+            </p:blockUI>
+        </h:form>
+
+        <ui:include src="/pages/include/closeConfirmationDialog.xhtml">
+            <ui:param name="targetDialog" value="crudDialog"/>
+        </ui:include>
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,26 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:form id="closeConfirmationDialogForm" prependId="false">
+        <p:confirmDialog id="closeConfirmationDialog" header="Confirmer la fermeture"
+                         severity="alert" widgetVar="closeConfirmationDialog">
+            <f:facet name="message">
+                <h:outputFormat value="Etes-vous sur de vouloir quitter le dialogue? Les données seront perdues." escape="false"/>
+            </f:facet>
+            <p:commandButton value="Oui" actionListener="#{controller.dismissChangesActionListener}"
+                             oncomplete="PF('closeConfirmationDialog').hide();" styleClass="ui-confirmdialog-yes"
+                             icon="pi pi-check"/>
+            <p:commandButton id="confirmDismissChangesDialogNo" value="Non"
+                             onclick="PF('closeConfirmationDialog').hide();"
+                             styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+        </p:confirmDialog>
+
+    </h:form>
+
+    <p:blockUI block="#{targetDialog}" widgetVar="closeConfirmationDialogBui" id="closeConfirmationDialogBui">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <h:outputText value="Veuillez patienter" style="white-space: nowrap;"/>
+    </p:blockUI>
+
+</ui:composition>

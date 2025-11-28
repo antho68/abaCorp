@@ -1,0 +1,21 @@
+<ui:composition
+        xmlns:f="jakarta.faces.core"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <div class="menu-wrapper">
+        <div class="layout-menu-container">
+            <h:form id="menuform">
+                <p:menubar orientation="horizontal" autoDisplay="false" model="#{menuController.model}">
+                    <f:facet name="end">
+                        <p:commandButton value="Logout" icon="pi pi-fw pi-sign-out" styleClass="ui-button-info"
+                            actionListener="#{sessionBean.logout}"/>
+                    </f:facet>
+                </p:menubar>
+            </h:form>
+        </div>
+    </div>
+
+</ui:composition>
