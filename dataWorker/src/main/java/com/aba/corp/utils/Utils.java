@@ -1,12 +1,13 @@
 package com.aba.corp.utils;
 
-import com.sun.tools.javac.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -20,10 +21,18 @@ public class Utils
     public static Locale LOCALE_DE_CH = new Locale("de", "CH");
     private static final DateTimeFormatter PATTERN_DATE_TIME_GERMAN_FORMATTER =
             DateTimeFormatter.ofPattern(PATTERN_DATE_TIME_GERMAN);
+    private static final DateTimeFormatter PATTERN_DATE_GERMAN_FORMATTER =
+            DateTimeFormatter.ofPattern(PATTERN_DATE_GERMAN);
 
     public static String getDateFormatted(Date date)
     {
         return getDateFormatted(date, PATTERN_DATE_GERMAN);
+    }
+
+
+    public static String getOffsetDateFormatted(OffsetDateTime offsetDateTime)
+    {
+        return offsetDateTime.format(PATTERN_DATE_GERMAN_FORMATTER);
     }
 
     public static String getOffsetDateTimeFormatted(OffsetDateTime offsetDateTime)
@@ -110,5 +119,11 @@ public class Utils
     public static boolean isCollectionEmpty(Collection<?> collection)
     {
         return collection == null || collection.isEmpty();
+    }
+
+    public static OffsetDateTime getOffsetDateTimeFromDate(Date date)
+    {
+        ZoneId paris = ZoneId.of("Europe/Paris");
+        return date == null ? null : date.toInstant().atZone(paris).toOffsetDateTime();
     }
 }

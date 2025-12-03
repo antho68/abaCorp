@@ -9,16 +9,13 @@
 
     <ui:define name="content">
         <h:form id="form" prependId="false">
-            <p:panelGrid layout="tabular" columns="0" styleClass="whitePanelGrid">
+            <p:panelGrid id="dataPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
                 <p:row>
                     <p:column>
-                        <p:outputLabel value="Fichier a analyser:"/>
-                        <p:fileUpload id="upload" value="#{controller.file}" mode="simple" skinSimple="true"/>
-                        <p:commandButton id="submit" value="Submit" ajax="false" action="#{controller.upload}"
-                                         styleClass="mt-3 ui-button-outlined block"/>
-                    </p:column>
-
-                    <p:column>
+                        <p:commandButton value="Nouveau depuis un fichier" icon="pi pi-plus"
+                                         title="Nouveau depuis un fichier" alt="Nouveau depuis un fichier"
+                                         actionListener="#{controller.addFromFileActionListener}"
+                                         style="margin-left:10px;"/>
                     </p:column>
                 </p:row>
             </p:panelGrid>
@@ -29,7 +26,7 @@
                       header="Utilisateur" showEffect="clip" hideEffect="clip" closeOnEscape="false">
 
                 <p:ajax event="close" listener="#{controller.handleCrudDialogClose}"
-                        update=":form:dataTable" oncomplete="autoScroll();"/>
+                        oncomplete="autoScroll();"/>
 
                 <p:panelGrid id="crudDialogPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
                     <p:row>
@@ -47,7 +44,7 @@
                                          oncomplete="hideDialog('crudDialogBui');"
                                          actionListener="#{controller.saveFormActionListener}"
                                          onstart="showDialog('crudDialogBui');"
-                                         update=":form:dataTable crudDialogPanel"/>
+                                         update="crudDialogPanel"/>
 
                         <p:commandButton value="Réinitialiser" title="Réinitialiser" alt="Réinitialiser"
                                          actionListener="#{controller.resetFormActionListener}"
@@ -74,5 +71,111 @@
         <ui:include src="/pages/include/closeConfirmationDialog.xhtml">
             <ui:param name="targetDialog" value="crudDialog"/>
         </ui:include>
+
+        <h:form id="addFromFileDialogForm" prependId="false">
+            <p:dialog id="addFromFileDialog" widgetVar="addFromFileDialog" modal="true" dynamic="true" closable="true"
+                      header="Importer depuis un fichier" showEffect="clip" hideEffect="clip" closeOnEscape="false">
+                <p:panelGrid id="addFromFileDialogPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Fichier:"/>
+                        </p:column>
+                        <p:column>
+                            <p:fileUpload value="#{controller.file}" listener="#{controller.handleFileUpload}"
+                                          mode="simple" skinSimple="true" auto="true" update="addFromFileDialogPanel"
+                                          process="@this" rendered="#{controller.inputStream == null}"/>
+                            <p:outputLabel value="Fichier présent" rendered="#{controller.inputStream != null}"
+                                           style="margin-right: 10px;"/>
+
+                            <p:commandButton value="Analyser les données" action="#{controller.processDataFile}"
+                                             styleClass="mt-3 ui-button-outlined block"
+                                             update="decryptedBankAccountItemTable"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:dataTable value="#{controller.decryptedBankAccountItems}" var="dto"
+                                         scrollHeight="300" scrollable="true" styleClass="dataTableWithSmallPadding"
+                                         id="decryptedBankAccountItemTable" widgetVar="decryptedBankAccountItemTable"
+                                         rowIndexVar="decryptedBankAccountItemTableIndex" rowKey="#{dto.id}"
+                                         multiViewState="true" lazy="false" selectionMode="single">
+
+                                <p:column headerText="Date" width="100">
+                                    <h:outputText value="#{dto.dateFormatted}" styleClass="col100"/>
+                                </p:column>
+
+                                <p:column headerText="Description">
+                                    <p:inputText value="#{dto.description}" styleClass="col100"/>
+                                </p:column>
+
+                                <p:column headerText="Valeur" width="120">
+                                    <p:inputNumber value="#{dto.amout}" symbol=" €"
+                                                   symbolPosition="s" decimalSeparator="," thousandSeparator=" " />
+                                </p:column>
+
+                                <p:column headerText="Type" width="150">
+                                    <p:selectOneMenu value="#{dto.type}">
+                                        <f:selectItems value="#{crudForm.itemTypes}" var="type"
+                                                       itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column headerText="Type de paiment" width="120">
+                                    <p:selectOneMenu value="#{dto.paymentType}">
+                                        <f:selectItems value="#{crudForm.paymentTypes}" var="type"
+                                                       itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column headerText="Propiétaire" width="120">
+                                    <p:selectOneMenu value="#{dto.owner}">
+                                        <f:selectItems value="#{crudForm.owners}" var="type"
+                                                       itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column headerText="Scope" width="120">
+                                    <p:selectOneMenu value="#{dto.scope}">
+                                        <f:selectItems value="#{crudForm.scopes}" var="type"
+                                                       itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column width="50">
+                                    <p:commandLink onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
+                                                   title="Supprimer" update="decryptedBankAccountItemTable">
+                                        <i class="pi pi-fw pi-times" aria-hidden="true"/>
+                                        <f:setPropertyActionListener value="#{dto}"
+                                                                     target="#{controller.deleteImportData}"/>
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <h:panelGroup layout="block" style="text-align:right;white-space:nowrap">
+                        <p:commandButton value="Importer" title="Importer" alt="Importer"
+                                         oncomplete="hideDialog('addFromFileDialog');"
+                                         actionListener="#{controller.importActionListener}"
+                                         onstart="showDialog('addFromFileDialog');"
+                                         update=":form:dataTable addFromFileDialogPanel"/>
+
+                        <p:commandButton value="Fermer" immediate="true"
+                                         oncomplete="hideDialog('addFromFileDialog');"
+                                         title="Fermer" alt="Fermer">
+                            <f:param name="skipvalidation" value="1"/>
+                        </p:commandButton>
+                    </h:panelGroup>
+                </f:facet>
+            </p:dialog>
+
+            <p:blockUI block="addFromFileDialog" widgetVar="addFromFileDialogBui" id="addFromFileDialogBui">
+                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                <h:outputText value="Veuillez patienter" style="white-space: nowrap;"/>
+            </p:blockUI>
+        </h:form>
     </ui:define>
 </ui:composition>

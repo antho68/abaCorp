@@ -7,11 +7,12 @@ import org.apache.poi.ss.usermodel.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-public class Processor
+public class ProcessorAccountItem
 {
     static String PATH_TO_ANALYSE = "C:\\temp";
     static Integer startRow = 6;
@@ -28,97 +29,118 @@ public class Processor
         doFullRead(fis, true);
     }
 
-    public static Collection<BankRecordDataDto> doFullRead(FileInputStream fis, boolean withLog) throws IOException
+    public static Collection<BankRecordDataDto> doFullRead(InputStream is, boolean withLog) throws IOException
     {
         Collection<BankRecordDataDto> bankRecordDataDtos = new ArrayList<>();
 
-        readDatas(fis, bankRecordDataDtos);
+        readDatas(is, bankRecordDataDtos);
         processDatas(bankRecordDataDtos);
         decryptDatas(bankRecordDataDtos, withLog);
 
         return bankRecordDataDtos;
     }
 
-    private static void readDatas(FileInputStream fis, Collection<BankRecordDataDto> bankRecordDataDtos) throws IOException
+    private static void readDatas(InputStream fis, Collection<BankRecordDataDto> bankRecordDataDtos) throws IOException
     {
         Workbook workbook = WorkbookFactory.create(fis);
         Integer lastRow = 0;
 
         if (workbook.getNumberOfSheets() > 1)
         {
-            Sheet sheet = workbook.getSheetAt(1);
-            Double totalAmount = 0.0;
-            lastRow = sheet.getLastRowNum() - 3;
-
-            for (Row row : sheet)
+            for (int i = 1; i <= workbook.getNumberOfSheets() - 1; i++)
             {
-                if (row.getRowNum() < startRow || row.getRowNum() > lastRow)
+                Sheet sheet = workbook.getSheetAt(i);
+                String sheetName = sheet.getSheetName();
+                if (sheetName.contains("hidden"))
                 {
                     continue;
                 }
 
-                BankRecordDataDto bankRecordDataDto = new BankRecordDataDto();
+                Double totalAmount = 0.0;
+                String accountCode = sheetName.replaceAll("Cpt ", "");
 
-                Cell dateCell = row.getCell(dateIncomingCellIndex);
-                Cell accountDateCell = row.getCell(dateAccountCellIndex);
-                Cell descriptionCell = row.getCell(descriptionCellIndex);
-                Cell debitCell = row.getCell(debitCellIndex);
-                Cell incomeCell = row.getCell(incomeCellIndex);
+                lastRow = sheet.getLastRowNum() - 3;
 
-                String rowData = "";
-
-                if (dateCell != null)
+                for (Row row : sheet)
                 {
-                    Date date = dateCell.getDateCellValue();
-                    bankRecordDataDto.setDate(date);
-
-                    if (accountDateCell != null)
+                    if (row.getRowNum() < startRow || row.getRowNum() > lastRow)
                     {
-                        Date accountDate = dateCell.getDateCellValue();
-                        bankRecordDataDto.setEffectiveDate(accountDate);
-
-                        if (accountDate != date)
-                        {
-                            rowData += Utils.getDateFormatted(date) + " (" + Utils.getDateFormatted(accountDate) + ")";
-                        }
-                        else
-                        {
-                            rowData += Utils.getDateFormatted(date);
-                        }
+                        continue;
                     }
-                    else
+
+                    BankRecordDataDto bankRecordDataDto = new BankRecordDataDto();
+
+                    Cell dateCell = row.getCell(dateIncomingCellIndex);
+                    Cell accountDateCell = row.getCell(dateAccountCellIndex);
+                    Cell descriptionCell = row.getCell(descriptionCellIndex);
+                    Cell debitCell = row.getCell(debitCellIndex);
+                    Cell incomeCell = row.getCell(incomeCellIndex);
+
+                    String rowData = "";
+
+                    try
                     {
-                        rowData += Utils.getDateFormatted(date);
+                        if (dateCell != null)
+                        {
+                            Date date = dateCell.getDateCellValue();
+                            bankRecordDataDto.setDate(date);
+
+                            if (accountDateCell != null)
+                            {
+                                Date accountDate = dateCell.getDateCellValue();
+                                bankRecordDataDto.setEffectiveDate(accountDate);
+
+                                if (accountDate != date)
+                                {
+                                    rowData += Utils.getDateFormatted(date) + " (" + Utils.getDateFormatted(accountDate) + ")";
+                                }
+                                else
+                                {
+                                    rowData += Utils.getDateFormatted(date);
+                                }
+                            }
+                            else
+                            {
+                                rowData += Utils.getDateFormatted(date);
+                            }
+                        }
+
+                        if (descriptionCell != null)
+                        {
+                            String description = " => " + descriptionCell.getStringCellValue();
+                            rowData += description;
+
+                            bankRecordDataDto.setDescription(description);
+                        }
+
+                        if (debitCell != null && debitCell.getCellType() == CellType.NUMERIC)
+                        {
+                            rowData += " " + debitCell.getNumericCellValue() + " €";
+                            totalAmount += debitCell.getNumericCellValue();
+
+                            bankRecordDataDto.setAmout(debitCell.getNumericCellValue());
+                        }
+
+                        if (incomeCell != null && incomeCell.getCellType() == CellType.NUMERIC)
+                        {
+                            rowData += " +" + incomeCell.getNumericCellValue() + " €";
+                            totalAmount += incomeCell.getNumericCellValue();
+
+                            bankRecordDataDto.setAmout(incomeCell.getNumericCellValue());
+                        }
+
+                        bankRecordDataDto.setAccountCode(accountCode);
+
+                        rowData += " => " + totalAmount + " €";
+
+                        bankRecordDataDtos.add(bankRecordDataDto);
+                    }
+                    catch (Exception e)
+                    {
+                        System.out.println("ERROR processing row: " + (row.getRowNum() + 1)
+                                + " sheet: " + sheet.getSheetName());
                     }
                 }
-
-                if (descriptionCell != null)
-                {
-                    String description = " => " + descriptionCell.getStringCellValue();
-                    rowData += description;
-
-                    bankRecordDataDto.setDescription(description);
-                }
-
-                if (debitCell != null && debitCell.getCellType() == CellType.NUMERIC)
-                {
-                    rowData += " " + debitCell.getNumericCellValue() + " €";
-                    totalAmount += debitCell.getNumericCellValue();
-
-                    bankRecordDataDto.setAmout(debitCell.getNumericCellValue());
-                }
-
-                if (incomeCell != null && incomeCell.getCellType() == CellType.NUMERIC)
-                {
-                    rowData += " +" + incomeCell.getNumericCellValue() + " €";
-                    totalAmount += incomeCell.getNumericCellValue();
-
-                    bankRecordDataDto.setAmout(incomeCell.getNumericCellValue());
-                }
-
-                rowData += " => " + totalAmount + " €";
-
-                bankRecordDataDtos.add(bankRecordDataDto);
             }
         }
 

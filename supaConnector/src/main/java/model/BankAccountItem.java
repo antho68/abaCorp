@@ -8,16 +8,15 @@ import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Date;
 
-public class BankItem extends AbstractModel<String> implements Serializable
+public class BankAccountItem extends AbstractModel<String> implements Serializable
 {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String id;
-
-    private Date date;
-    private Date effectiveDate;
+    private String accountId;
+    private OffsetDateTime date;
+    private OffsetDateTime effectiveDate;
     private String description;
     private Double amout;
-
     private String type;
     private String paymentType;
     private String owner;
@@ -34,32 +33,43 @@ public class BankItem extends AbstractModel<String> implements Serializable
         this.id = id;
     }
 
-    public Date getDate()
+    public String getAccountId()
+    {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId)
+    {
+        this.accountId = accountId;
+    }
+
+    public OffsetDateTime getDate()
     {
         return date;
     }
 
+    public void setDate(OffsetDateTime date)
+    {
+        this.date = date;
+    }
+
+    @Transient
     public String getDateFormatted()
     {
         if (getDate() != null)
         {
-            return Utils.getDateFormatted(getDate());
+            return Utils.getOffsetDateTimeFormatted(getDate());
         }
 
         return "";
     }
 
-    public void setDate(Date date)
-    {
-        this.date = date;
-    }
-
-    public Date getEffectiveDate()
+    public OffsetDateTime getEffectiveDate()
     {
         return effectiveDate;
     }
 
-    public void setEffectiveDate(Date effectiveDate)
+    public void setEffectiveDate(OffsetDateTime effectiveDate)
     {
         this.effectiveDate = effectiveDate;
     }

@@ -47,6 +47,8 @@ public class RequestFilterAbaCorpWeb implements Filter
             return;
         }
 
+        String uri = request.getRequestURI();
+
         String token = getCookieValue(request, "rememberme_token");
         if (token != null)
         {
@@ -87,9 +89,12 @@ public class RequestFilterAbaCorpWeb implements Filter
                 throw new RuntimeException(e);
             }
         }
-
-        String uri = request.getRequestURI();
-        if (uri.equals(request.getContextPath() + "/") || uri.equals(request.getContextPath()))
+        else if (uri.equals(request.getContextPath() + "/") || uri.equals(request.getContextPath()))
+        {
+            response.sendRedirect(request.getContextPath() + "/pages/loginGroup/login.xhtml");
+            return;
+        }
+        else if (!uri.equals("/web/pages/loginGroup/login.xhtml"))
         {
             response.sendRedirect(request.getContextPath() + "/pages/loginGroup/login.xhtml");
             return;

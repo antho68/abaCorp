@@ -90,6 +90,17 @@ public class MenuController implements Serializable
                 .build();
         bankSubMenu.getElements().add(item);
 
+        params = new java.util.HashMap<>();
+        params.put("menuLink", List.of("/pages/bank/bankData.xhtml"));
+        MenuElement bankData = DefaultMenuItem.builder()
+                .value("Details des comptes")
+                .command("#{menuController.goToMenu}")
+                .icon("pi pi-chart-bar")
+                .params(params)
+                .build();
+
+        bankSubMenu.getElements().add(bankData);
+
         getModel().getElements().add(bankSubMenu);
     }
 

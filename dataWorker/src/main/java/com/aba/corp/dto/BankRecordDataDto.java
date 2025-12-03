@@ -6,6 +6,8 @@ import java.util.Date;
 
 public class BankRecordDataDto
 {
+    private String accountCode;
+
     private Date date;
     private Date effectiveDate;
     private String description;
@@ -18,6 +20,16 @@ public class BankRecordDataDto
 
     public BankRecordDataDto()
     {
+    }
+
+    public String getAccountCode()
+    {
+        return accountCode;
+    }
+
+    public void setAccountCode(String accountCode)
+    {
+        this.accountCode = accountCode;
     }
 
     public String getDataFromRecordDataDto()
