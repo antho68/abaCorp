@@ -111,7 +111,7 @@
 
                                 <p:column headerText="Valeur" width="120">
                                     <p:inputNumber value="#{dto.amout}" symbol=" €"
-                                                   symbolPosition="s" decimalSeparator="," thousandSeparator=" " />
+                                                   symbolPosition="s" decimalSeparator="," thousandSeparator=" "/>
                                 </p:column>
 
                                 <p:column headerText="Type" width="150">
@@ -143,8 +143,9 @@
                                 </p:column>
 
                                 <p:column width="50">
-                                    <p:commandLink onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
-                                                   title="Supprimer" update="decryptedBankAccountItemTable">
+                                    <p:commandLink
+                                            onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
+                                            title="Supprimer" update="decryptedBankAccountItemTable">
                                         <i class="pi pi-fw pi-times" aria-hidden="true"/>
                                         <f:setPropertyActionListener value="#{dto}"
                                                                      target="#{controller.deleteImportData}"/>

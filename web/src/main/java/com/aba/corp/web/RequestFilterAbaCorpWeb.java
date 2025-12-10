@@ -94,7 +94,7 @@ public class RequestFilterAbaCorpWeb implements Filter
             response.sendRedirect(request.getContextPath() + "/pages/loginGroup/login.xhtml");
             return;
         }
-        else if (!uri.equals("/web/pages/loginGroup/login.xhtml"))
+        else if (!uri.equals("/web/pages/loginGroup/login.xhtml") && uri.contains("/web/pages/"))
         {
             response.sendRedirect(request.getContextPath() + "/pages/loginGroup/login.xhtml");
             return;

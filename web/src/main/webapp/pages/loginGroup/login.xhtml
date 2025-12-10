@@ -2,8 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
-      xmlns:p="primefaces"
->
+      xmlns:p="primefaces">
 <h:head>
     <f:facet name="first">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -12,6 +11,9 @@
         <meta name="apple-mobile-web-app-capable" content="yes"/>
     </f:facet>
 
+    <h:outputScript id="abaCorpJs" library="js" name="abaCorp.js"/>
+    <h:outputStylesheet id="abCorpCss" library="css" name="abaCorp.css"/>
+    <h:outputStylesheet id="loginStyleCss" library="css" name="loginStyle.css"/>
     <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
 </h:head>
 
@@ -55,8 +57,5 @@
             </h:form>
         </div>
     </div>
-
-    <h:outputStylesheet id="abCorpCss" library="css" name="abaCorp.css"/>
-    <h:outputStylesheet id="loginStyleCss" library="css" name="loginStyle.css"/>
 </h:body>
 </html>

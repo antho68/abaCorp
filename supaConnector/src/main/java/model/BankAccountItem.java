@@ -58,7 +58,7 @@ public class BankAccountItem extends AbstractModel<String> implements Serializab
     {
         if (getDate() != null)
         {
-            return Utils.getOffsetDateTimeFormatted(getDate());
+            return Utils.getOffsetDateFormatted(getDate());
         }
 
         return "";

@@ -107,4 +107,19 @@ public interface Constants
         );
     }
 
+    public interface BankAccountRuleValueToSet
+    {
+        public final static String TYPE = "1";
+        public final static String PAYMENT = "2";
+        public final static String OWNER = "3";
+        public final static String SCOPE = "4";
+
+        public final static Collection<String> all = java.util.Arrays.asList(TYPE, PAYMENT, OWNER, SCOPE);
+        public final static Map<String, String> labels = Map.of(
+                TYPE, "Type",
+                PAYMENT, "Paiement",
+                OWNER, "Propriétaire",
+                SCOPE, "Scope"
+        );
+    }
 }

@@ -45,7 +45,10 @@ public class BankAccountController extends AbstractController<BankAccountForm, B
     {
         try
         {
-            setDatas(bankAccountDAO.findAll());
+            if (sessionBean != null && sessionBean.getUser() != null)
+            {
+                setDatas(bankAccountDAO.findBy("userId", sessionBean.getUser().getId()));
+            }
         }
         catch (Exception e)
         {

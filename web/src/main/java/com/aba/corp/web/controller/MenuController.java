@@ -101,6 +101,17 @@ public class MenuController implements Serializable
 
         bankSubMenu.getElements().add(bankData);
 
+        params = new java.util.HashMap<>();
+        params.put("menuLink", List.of("/pages/bank/bankDataRules.xhtml"));
+        MenuElement bankAccountRule = DefaultMenuItem.builder()
+                .value("Regles des comptes")
+                .command("#{menuController.goToMenu}")
+                .icon("pi pi-question")
+                .params(params)
+                .build();
+
+        bankSubMenu.getElements().add(bankAccountRule);
+
         getModel().getElements().add(bankSubMenu);
     }
 

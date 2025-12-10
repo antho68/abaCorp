@@ -107,8 +107,8 @@ public class ProcessorAccountItem
 
                         if (descriptionCell != null)
                         {
-                            String description = " => " + descriptionCell.getStringCellValue();
-                            rowData += description;
+                            String description = descriptionCell.getStringCellValue();
+                            rowData += "=> " + description;
 
                             bankRecordDataDto.setDescription(description);
                         }
@@ -276,8 +276,7 @@ public class ProcessorAccountItem
         {
             bankRecordDataDto.setScope(Constants.BankRecordDataScope.INTERNAL);
         }
-        else if (bankRecordDataDto.getDescription().contains("PRLV SEPA FREE TELECOM")
-                || bankRecordDataDto.getDescription().contains("PRLV SEPA FREE MOBILE"))
+        else
         {
             bankRecordDataDto.setScope(Constants.BankRecordDataScope.EXTERNAL);
         }

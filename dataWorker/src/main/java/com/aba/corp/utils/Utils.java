@@ -7,7 +7,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -28,7 +27,6 @@ public class Utils
     {
         return getDateFormatted(date, PATTERN_DATE_GERMAN);
     }
-
 
     public static String getOffsetDateFormatted(OffsetDateTime offsetDateTime)
     {
@@ -125,5 +123,23 @@ public class Utils
     {
         ZoneId paris = ZoneId.of("Europe/Paris");
         return date == null ? null : date.toInstant().atZone(paris).toOffsetDateTime();
+    }
+
+    public static String getStringWithoutLanguageChar(String text)
+    {
+        if (text != null)
+        {
+            text = text.replaceAll("À", "a").replaceAll("Â", "a");
+            text = text.replaceAll("É", "e").replaceAll("È", "e").replaceAll("Ê", "e");
+            text = text.replaceAll("Ù", "u").replaceAll("û", "u");
+            text = text.replaceAll("Ô", "o");
+
+            text = text.replaceAll("à", "a").replaceAll("â", "a");
+            text = text.replaceAll("é", "e").replaceAll("è", "e").replaceAll("ê", "e");
+            text = text.replaceAll("ù", "u").replaceAll("û", "u");
+            text = text.replaceAll("ô", "o");
+        }
+
+        return text;
     }
 }

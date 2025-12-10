@@ -17,14 +17,13 @@
               rel="shortcut icon"/>
 
         <h:outputScript id="abaCorpJs" library="js" name="abaCorp.js"/>
+        <h:outputStylesheet library="css" name="abaCorp.css"/>
 
         <ui:insert name="head"/>
     </h:head>
 
     <h:body>
         <ui:include src="menu.xhtml"/>
-
-        <h:outputStylesheet library="css" name="abaCorp.css" target="body"/>
 
         <div class="layout-content" style="padding-top: 10px;">
             <ui:insert name="content"/>
@@ -39,8 +38,6 @@
                 <h:outputText/>
             </f:facet>
         </p:ajaxStatus>
-
-        <ui:insert name="cssClasses"/>
     </h:body>
 
 </f:view>

@@ -80,8 +80,8 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
     public void setEditSelectedDto(D selectedData)
     {
         setSelectedData(selectedData);
-        this.crudForm.setMode(CrudMode.EDIT);
         this.crudForm.resetForm(selectedData);
+        this.crudForm.setMode(CrudMode.EDIT);
 
         showDialog("crudDialog");
         updateOnRequestContext("crudDialogForm");
@@ -103,8 +103,10 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
         {
             showDialog("closeConfirmationDialog");
         }
-
-        hideDialog("crudDialog");
+        else
+        {
+            hideDialog("crudDialog");
+        }
     }
 
     public void dismissChangesActionListener()
@@ -203,8 +205,8 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
     public void addActionListener()
     {
         D data = initNewData();
-        this.crudForm.setMode(CrudMode.ADD);
         this.crudForm.resetForm(data);
+        this.crudForm.setMode(CrudMode.ADD);
 
         showDialog("crudDialog");
         updateOnRequestContext("crudDialogForm");
