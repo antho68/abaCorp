@@ -48,6 +48,15 @@ public class BankDataRuleController extends AbstractController<BankDataRuleForm,
                 setMyBankAccounts(bankAccountDAO.findBy("userId", sessionBean.getUser().getId()));
 
                 getCrudForm().setMyBankAccounts(getMyBankAccounts());
+
+                for (BankAccountRule bankAccountRule : getDatas())
+                {
+                    BankAccount bankAccount = getMyBankAccounts().stream()
+                            .filter(ba -> ba.getId().equals(bankAccountRule.getAccountId()))
+                            .findFirst().orElse(null);
+                    bankAccountRule.setAccountDescription(bankAccount != null ?
+                            bankAccount.getCode() + " (" + bankAccount.getName() + ")" : "");
+                }
             }
         }
         catch (Exception e)

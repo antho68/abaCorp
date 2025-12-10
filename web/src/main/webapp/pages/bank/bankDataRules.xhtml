@@ -27,7 +27,7 @@
                 </p:column>
 
                 <p:column headerText="Id de compte">
-                    <h:outputText value="#{dto.accountId}"/>
+                    <h:outputText value="#{dto.accountDescription}"/>
                 </p:column>
 
                 <p:column headerText="Text a chercher">
@@ -35,7 +35,7 @@
                 </p:column>
 
                 <p:column headerText="Valeur a set" width="200">
-                    <h:outputText value="#{dto.valueToSet}"/>
+                    <h:outputText value="#{dto.valueToSet}" converter="#{bankAccountRuleValueToSetConverter}"/>
                 </p:column>
 
                 <p:column headerText="Valeur" width="200">
@@ -136,7 +136,7 @@
                                          oncomplete="hideDialog('crudDialogBui');"
                                          actionListener="#{controller.saveFormActionListener}"
                                          onstart="showDialog('crudDialogBui');"
-                                         update="crudDialogPanel"/>
+                                         update="crudDialogPanel dataTable"/>
 
                         <p:commandButton value="Réinitialiser" title="Réinitialiser" alt="Réinitialiser"
                                          actionListener="#{controller.resetFormActionListener}"

@@ -101,6 +101,8 @@ public class BankDataRuleForm extends AbstractCrudForm<BankAccountRule> implemen
         getSelectedData().setValueToSet(getValueToSet());
         getSelectedData().setValue(getValue());
 
+        getSelectedData().setAccountDescription(getSelectedBankAccount().getLabel());
+
         try
         {
             if (isAddMode() || isCopyMode())

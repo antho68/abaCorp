@@ -13,6 +13,8 @@ public class BankAccountRule extends AbstractModel<String> implements Serializab
     private String valueToSet;
     private String value;
 
+    private String accountDescription;
+
     public String getId()
     {
         return id;
@@ -63,4 +65,12 @@ public class BankAccountRule extends AbstractModel<String> implements Serializab
         this.value = value;
     }
 
+    public String getAccountDescription()
+    {
+        return accountDescription;
+    }
+    public void setAccountDescription(String accountDescription)
+    {
+        this.accountDescription = accountDescription;
+    }
 }
