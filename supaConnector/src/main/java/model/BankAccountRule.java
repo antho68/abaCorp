@@ -22,6 +22,12 @@ public class BankAccountRule extends AbstractModel<String> implements Serializab
         return id;
     }
 
+    @JsonIgnore()
+    public Integer getIdForSorting()
+    {
+        return id != null ? Integer.valueOf(id) : 99999;
+    }
+
     public void setId(String id)
     {
         this.id = id;
@@ -71,6 +77,7 @@ public class BankAccountRule extends AbstractModel<String> implements Serializab
     {
         return accountDescription;
     }
+
     public void setAccountDescription(String accountDescription)
     {
         this.accountDescription = accountDescription;

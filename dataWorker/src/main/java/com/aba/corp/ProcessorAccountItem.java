@@ -191,7 +191,6 @@ public class ProcessorAccountItem
                 || bankRecordDataDto.getDescription().contains("ECH PRET CAP+IN")
                 || bankRecordDataDto.getDescription().contains("VIR IMPOT FONCIER PAS TOUCHER")
                 || bankRecordDataDto.getDescription().contains("VIR IMPOT NE PAS TOUCHER")
-                || bankRecordDataDto.getDescription().contains("ECH PRET CAP+IN")
                 || bankRecordDataDto.getDescription().contains("PRLV SEPA AXA FRANCE VIE")
                 || bankRecordDataDto.getDescription().contains("PRLV SEPA EDF CLIENTS")
                 || bankRecordDataDto.getDescription().contains("PRLV SEPA FREE TELECOM")

@@ -75,20 +75,30 @@ public class BankDataRuleForm extends AbstractCrudForm<BankAccountRule> implemen
             setId(getSelectedData().getId());
             setAccountId(getSelectedData().getAccountId());
 
-            BankAccount bankAccount = getMyBankAccounts().stream()
-                    .filter(b -> b.getId().equals(getSelectedData().getAccountId()))
-                            .findFirst().orElse(null);
-
-            setSelectedBankAccount(null);
-            if (bankAccount != null)
-            {
-                setSelectedBankAccount(new EntityItem<BankAccount>(bankAccount,
-                        bankAccount.getName() + " (" + bankAccount.getCode() + ")"));
-            }
+            setBankAccountForRule();
 
             setContainText(getSelectedData().getContainText());
             setValueToSet(getSelectedData().getValueToSet());
             setValue(getSelectedData().getValue());
+
+            valueToSetChanged();
+        }
+    }
+
+    private void setBankAccountForRule()
+    {
+        BankAccount bankAccount = getMyBankAccounts().stream()
+                .filter(b -> b.getId().equals(getSelectedData().getAccountId()))
+                        .findFirst().orElse(null);
+
+        setSelectedBankAccount(null);
+        if (bankAccount != null)
+        {
+            setSelectedBankAccount(new EntityItem<BankAccount>(bankAccount,
+                    bankAccount.getName() + " (" + bankAccount.getCode() + ")"));
+
+            getSelectedData().setAccountDescription(bankAccount != null ?
+                    bankAccount.getCode() + " (" + bankAccount.getName() + ")" : "");
         }
     }
 
@@ -113,6 +123,8 @@ public class BankDataRuleForm extends AbstractCrudForm<BankAccountRule> implemen
             {
                 setSelectedData(bankAccountRuleDAO.update("id", getId(), getSelectedData()));
             }
+
+            setBankAccountForRule();
         }
         catch (Exception e)
         {
@@ -199,33 +211,35 @@ public class BankDataRuleForm extends AbstractCrudForm<BankAccountRule> implemen
     public void valueToSetChanged()
     {
         Collection<SelectItem> values = new ArrayList<>();
-
-        switch (getValueToSet())
+        if (getValueToSet() != null)
         {
-            case Constants.BankAccountRuleValueToSet.TYPE:
-                for (String type : Constants.BankRecordDataType.allTypes)
-                {
-                    values.add(new SelectItem(type, Constants.BankRecordDataType.labels.get(type)));
-                }
-                break;
-            case Constants.BankAccountRuleValueToSet.PAYMENT:
-                for (String currency : Constants.BankRecordDataPaymentType.all)
-                {
-                    values.add(new SelectItem(currency, Constants.BankRecordDataPaymentType.labels.get(currency)));
-                }
-                break;
-            case Constants.BankAccountRuleValueToSet.OWNER:
-                for (String currency : Constants.BankRecordDataOwner.all)
-                {
-                    values.add(new SelectItem(currency, Constants.BankRecordDataOwner.labels.get(currency)));
-                }
-                break;
-            case Constants.BankAccountRuleValueToSet.SCOPE:
-                for (String currency : Constants.BankRecordDataScope.all)
-                {
-                    values.add(new SelectItem(currency, Constants.BankRecordDataScope.labels.get(currency)));
-                }
-                break;
+            switch (getValueToSet())
+            {
+                case Constants.BankAccountRuleValueToSet.TYPE:
+                    for (String type : Constants.BankRecordDataType.allTypes)
+                    {
+                        values.add(new SelectItem(type, Constants.BankRecordDataType.labels.get(type)));
+                    }
+                    break;
+                case Constants.BankAccountRuleValueToSet.PAYMENT:
+                    for (String currency : Constants.BankRecordDataPaymentType.all)
+                    {
+                        values.add(new SelectItem(currency, Constants.BankRecordDataPaymentType.labels.get(currency)));
+                    }
+                    break;
+                case Constants.BankAccountRuleValueToSet.OWNER:
+                    for (String currency : Constants.BankRecordDataOwner.all)
+                    {
+                        values.add(new SelectItem(currency, Constants.BankRecordDataOwner.labels.get(currency)));
+                    }
+                    break;
+                case Constants.BankAccountRuleValueToSet.SCOPE:
+                    for (String currency : Constants.BankRecordDataScope.all)
+                    {
+                        values.add(new SelectItem(currency, Constants.BankRecordDataScope.labels.get(currency)));
+                    }
+                    break;
+            }
         }
 
         setValues(values);

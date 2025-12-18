@@ -17,6 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 @Named
 @ViewScoped
@@ -46,6 +49,10 @@ public class BankDataRuleController extends AbstractController<BankDataRuleForm,
             if (sessionBean != null && sessionBean.getUser() != null)
             {
                 setDatas(bankAccountRuleDAO.findByUserId(sessionBean.getUser().getId()));
+
+                setDatas(new LinkedList<BankAccountRule>(getDatas().stream()
+                        .sorted(Comparator.comparing(BankAccountRule::getIdForSorting).reversed()).toList()));
+
                 setMyBankAccounts(bankAccountDAO.findBy("userId", sessionBean.getUser().getId()));
 
                 getCrudForm().setMyBankAccounts(getMyBankAccounts());
@@ -142,5 +149,14 @@ public class BankDataRuleController extends AbstractController<BankDataRuleForm,
     public void saveBankDataRuleFormActionListener()
     {
         saveFormActionListener();
+    }
+
+    @Override
+    protected void doAfterSave()
+    {
+        super.doAfterSave();
+
+        setDatas(new LinkedList<BankAccountRule>(getDatas().stream()
+                .sorted(Comparator.comparing(BankAccountRule::getIdForSorting).reversed()).toList()));
     }
 }
