@@ -8,6 +8,7 @@ import com.aba.corp.web.form.BankForm;
 import com.aba.corp.web.utils.CommonUtils;
 import com.aba.corp.web.utils.CrudMode;
 import dao.BankAccountDAO;
+import dao.BankAccountRuleDAO;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -22,9 +23,7 @@ import utils.MessageUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 
 @Named
 @ViewScoped
@@ -32,6 +31,8 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
 {
     @Inject
     private BankForm bankForm;
+    @Inject
+    private BankAccountRuleDAO bankAccountRuleDAO;
     @Inject
     private BankDataRuleForm bankDataRuleForm;
     @Inject
@@ -43,6 +44,8 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
     private Collection<BankAccountItem> decryptedBankAccountItems;
     private Collection<BankAccount> myBankAccounts = new ArrayList<>();
     private BankAccountRule selectedBankAccountRule;
+
+    private Map<String, LinkedList<BankAccountRule>> bankAccountRulesMap = new HashMap<>();
 
     @PostConstruct
     public void init()
@@ -88,7 +91,7 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
             try
             {
                 Collection<BankRecordDataDto> bankRecordDataDtos = processorAccountItem.doFullRead(getInputStream()
-                        , false);
+                        , false, false);
 
                 decryptedBankAccountItems = new LinkedList<>();
 
@@ -102,17 +105,13 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
                         continue;
                     }
 
-                    //TODO ABA
                     BankAccountItem bankAccountItem = new BankAccountItem();
+
                     bankAccountItem.setId(i.toString());
                     bankAccountItem.setDate(CommonUtils.getOffsetDateTimeFromDate(d.getDate()));
                     bankAccountItem.setEffectiveDate(CommonUtils.getOffsetDateTimeFromDate(d.getEffectiveDate()));
                     bankAccountItem.setDescription(d.getDescription());
                     bankAccountItem.setAmout(d.getAmout());
-                    bankAccountItem.setType(d.getType());
-                    bankAccountItem.setPaymentType(d.getPaymentType());
-                    bankAccountItem.setOwner(d.getOwner());
-                    bankAccountItem.setScope(d.getScope());
 
                     bankAccountItem.setAccountId(null);
                     if (getMyBankAccounts() != null && getMyBankAccounts().size() > 1)
@@ -126,6 +125,13 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
                             bankAccountItem.setAccountId(matchedBankAccount.getId());
                         }
                     }
+
+                    processRulesForItem(bankAccountItem);
+
+                    bankAccountItem.setType(d.getType());
+                    bankAccountItem.setPaymentType(d.getPaymentType());
+                    bankAccountItem.setOwner(d.getOwner());
+                    bankAccountItem.setScope(d.getScope());
 
                     decryptedBankAccountItems.add(bankAccountItem);
                     i++;
@@ -143,6 +149,38 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
             MessageUtils.addErrorMessage("No file uploaded.");
             showErrorDialog();
         }
+    }
+
+    public void processRulesForItem(BankAccountItem bankAccountItem)
+    {
+        if (bankAccountItem.getAccountId() != null
+                && !getBankAccountRulesMap().containsKey(bankAccountItem.getAccountId()))
+        {
+            try
+            {
+                LinkedList<BankAccountRule> bankAccountRules =
+                        bankAccountRuleDAO.findByAccountId(bankAccountItem.getAccountId());
+
+                getBankAccountRulesMap().put(bankAccountItem.getAccountId(), bankAccountRules);
+            }
+            catch (Exception e)
+            {
+                CommonUtils.logError("Error loading bank account rules for accountId "
+                        + bankAccountItem.getAccountId(), e);
+            }
+        }
+
+        if (bankAccountItem.getAccountId() != null
+                && getBankAccountRulesMap().containsKey(bankAccountItem.getAccountId()))
+        {
+            LinkedList<BankAccountRule> allRulesForAccount = getBankAccountRulesMap().get(bankAccountItem.getAccountId());
+
+            if (!CommonUtils.isCollectionEmpty(allRulesForAccount))
+            {
+
+            }
+        }
+
     }
 
     public void setDeleteImportData(BankAccountItem toDeleteBankAccountItem)
@@ -223,6 +261,7 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
     {
         return selectedBankAccountRule;
     }
+
     public void setSelectedBankAccountRule(BankAccountRule selectedBankAccountRule)
     {
         this.selectedBankAccountRule = selectedBankAccountRule;
@@ -248,5 +287,15 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
     public void dismissBankDataRuleChangesActionListener()
     {
         hideDialog("bankDataRuleDialog");
+    }
+
+    public Map<String, LinkedList<BankAccountRule>> getBankAccountRulesMap()
+    {
+        return bankAccountRulesMap;
+    }
+
+    public void setBankAccountRulesMap(Map<String, LinkedList<BankAccountRule>> bankAccountRulesMap)
+    {
+        this.bankAccountRulesMap = bankAccountRulesMap;
     }
 }

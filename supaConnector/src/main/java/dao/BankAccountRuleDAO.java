@@ -59,4 +59,9 @@ public class BankAccountRuleDAO extends AbstractDAODecorator<BankAccountRule> im
         String sFilter = "?select=*,...BankAccount!inner()&BankAccount.userId=eq." + userId;
         return findByFilter(sFilter);
     }
+
+    public LinkedList<BankAccountRule> findByAccountId(String accountId) throws Exception
+    {
+        return findBy("accountId", accountId);
+    }
 }

@@ -26,15 +26,20 @@ public class ProcessorAccountItem
     static void main() throws IOException
     {
         FileInputStream fis = new FileInputStream(PATH_TO_ANALYSE + "\\comptes.xlsx");
-        doFullRead(fis, true);
+        doFullRead(fis, true, true);
     }
 
-    public static Collection<BankRecordDataDto> doFullRead(InputStream is, boolean withLog) throws IOException
+    public static Collection<BankRecordDataDto> doFullRead(InputStream is, boolean withLog, boolean processData) throws IOException
     {
         Collection<BankRecordDataDto> bankRecordDataDtos = new ArrayList<>();
 
         readDatas(is, bankRecordDataDtos);
-        processDatas(bankRecordDataDtos);
+
+        if (processData)
+        {
+            processDatas(bankRecordDataDtos);
+        }
+
         decryptDatas(bankRecordDataDtos, withLog);
 
         return bankRecordDataDtos;

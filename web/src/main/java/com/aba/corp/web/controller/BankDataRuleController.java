@@ -1,5 +1,6 @@
 package com.aba.corp.web.controller;
 
+import com.aba.corp.utils.Constants;
 import com.aba.corp.utils.Utils;
 import com.aba.corp.web.form.BankDataRuleForm;
 import com.aba.corp.web.item.EntityItem;
@@ -78,8 +79,7 @@ public class BankDataRuleController extends AbstractController<BankDataRuleForm,
     protected BankAccountRule initNewData()
     {
         BankAccountRule bankAccountRule = new BankAccountRule();
-        //TODO AVA , TMP REMOVE BEFORE INSTALLATION
-        bankAccountRule.setAccountId("10");
+        bankAccountRule.setValueToSet(Constants.BankAccountRuleValueToSet.TYPE);
         return bankAccountRule;
     }
 
