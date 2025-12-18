@@ -77,7 +77,10 @@ public class BankDataRuleController extends AbstractController<BankDataRuleForm,
     @Override
     protected BankAccountRule initNewData()
     {
-        return new BankAccountRule();
+        BankAccountRule bankAccountRule = new BankAccountRule();
+        //TODO AVA , TMP REMOVE BEFORE INSTALLATION
+        bankAccountRule.setAccountId("10");
+        return bankAccountRule;
     }
 
     public Collection<BankAccount> getMyBankAccounts()
