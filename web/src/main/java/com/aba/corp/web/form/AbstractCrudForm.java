@@ -49,6 +49,7 @@ public class AbstractCrudForm<D extends AbstractModel<? extends Serializable>>
     {
         this.formChanged = true;
     }
+
     public void formChanged()
     {
         this.formChanged = true;

@@ -65,42 +65,7 @@ public class CommonUtils extends Utils
         return properties;
     }
 
-    public static void logError(String message)
-    {
-        log.error(getLogId() + ": " + message);
-    }
-
-    public static void logWarn(String message)
-    {
-        log.warn(getLogId() + ": " + message);
-    }
-
-    public static void logError(Throwable t)
-    {
-        logError(t.getMessage(), t);
-    }
-
-    public static void logError(String message, Throwable t)
-    {
-        log.error(getLogId() + ": " + (message != null ? message : "message is null!"), t);
-    }
-
-    public static void logInfo(String message)
-    {
-        log.info(getLogId() + ": " + message);
-    }
-
-    public static void logDebug(String message)
-    {
-        log.debug(getLogId() + ": " + message);
-    }
-
-    public static void logTrace(String message)
-    {
-        log.trace(getLogId() + ": " + message);
-    }
-
-    private static String getLogId()
+    protected static String getLogId()
     {
         return CommonContextHolder.getId() != null ? CommonContextHolder.getId() : "LOG_ID NOT SET";
     }

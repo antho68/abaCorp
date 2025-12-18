@@ -25,8 +25,7 @@
             <p:dialog id="crudDialog" widgetVar="crudDialog" modal="true" dynamic="true" closable="true"
                       header="Utilisateur" showEffect="clip" hideEffect="clip" closeOnEscape="false">
 
-                <p:ajax event="close" listener="#{controller.handleCrudDialogClose}"
-                        oncomplete="autoScroll();"/>
+                <p:ajax event="close" listener="#{controller.handleCrudDialogClose}"/>
 
                 <p:panelGrid id="crudDialogPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
                     <p:row>
@@ -143,8 +142,14 @@
                                 </p:column>
 
                                 <p:column width="50">
-                                    <p:commandLink
-                                            onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
+                                    <p:commandLink onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
+                                                   title="Ajouter une regle" update="decryptedBankAccountItemTable">
+                                        <i class="pi pi-fw pi-book" aria-hidden="true"/>
+                                        <f:setPropertyActionListener value="#{dto}"
+                                                                     target="#{controller.addNewRuleData}"/>
+                                    </p:commandLink>
+
+                                    <p:commandLink onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
                                             title="Supprimer" update="decryptedBankAccountItemTable">
                                         <i class="pi pi-fw pi-times" aria-hidden="true"/>
                                         <f:setPropertyActionListener value="#{dto}"
@@ -178,5 +183,11 @@
                 <h:outputText value="Veuillez patienter" style="white-space: nowrap;"/>
             </p:blockUI>
         </h:form>
+
+        <ui:include src="/pages/include/bankDataRuleDialog.xhtml">
+            <ui:param name="incController" value="#{controller}"/>
+            <ui:param name="incForm" value="#{bankDataRuleForm}"/>
+            <ui:param name="updateOnSave" value="dataTable"/>
+        </ui:include>
     </ui:define>
 </ui:composition>

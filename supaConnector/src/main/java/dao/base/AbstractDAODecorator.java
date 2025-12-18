@@ -1,5 +1,6 @@
 package dao.base;
 
+import com.aba.corp.utils.Utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -72,6 +73,9 @@ public abstract class AbstractDAODecorator<T> implements Serializable
     public T insert(T obj) throws IOException
     {
         String json = mapper.writeValueAsString(obj);
+
+        Utils.logRequest(getTableName(),"Insert", json);
+
         String response = client.post("/" + getTableName(), json);
 
         JavaType listType = mapper.getTypeFactory()
@@ -91,6 +95,9 @@ public abstract class AbstractDAODecorator<T> implements Serializable
     public T update(String column, String value, T obj) throws IOException
     {
         String json = mapper.writeValueAsString(obj);
+
+        Utils.logRequest(getTableName(),"Update" , json);
+
         String response = client.patch("/" + getTableName() + "?" + column + "=eq." + value, json);
 
         List<T> list = mapper.readValue(response,
@@ -102,6 +109,8 @@ public abstract class AbstractDAODecorator<T> implements Serializable
     // DELETE by column=value
     public void delete(String column, String value) throws IOException
     {
+        Utils.logRequest(getTableName(), "Delete", value);
+
         client.delete("/" + getTableName() + "?" + column + "=eq." + value);
     }
 }

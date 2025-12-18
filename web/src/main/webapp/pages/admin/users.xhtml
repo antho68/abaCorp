@@ -52,7 +52,7 @@
                       header="Utilisateur" showEffect="clip" hideEffect="clip" closeOnEscape="false">
 
                 <p:ajax event="close" listener="#{controller.handleCrudDialogClose}"
-                        update=":form:dataTable" oncomplete="autoScroll();"/>
+                        update=":form:dataTable"/>
 
                 <p:panelGrid id="crudDialogPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
                     <p:row>

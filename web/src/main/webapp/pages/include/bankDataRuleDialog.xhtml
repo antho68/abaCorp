@@ -1,0 +1,129 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="jakarta.faces.core" xmlns:p="primefaces"
+                xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="bankDataRuleDialogForm" prependId="false">
+        <p:dialog id="bankDataRuleDialog" widgetVar="bankDataRuleDialog" modal="true" dynamic="true" closable="false"
+                  header="Utilisateur" showEffect="clip" hideEffect="clip" closeOnEscape="false">
+
+            <p:ajax event="close" listener="#{incController.handleBankDataRuleDialogClose}"/>
+
+            <p:panelGrid id="bankDataRuleDialogPanel" layout="tabular" columns="0" styleClass="whitePanelGrid">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="ID"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{incForm.id}"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Id de compte"/>
+                    </p:column>
+                    <p:column>
+                        <p:autoComplete value="#{incForm.selectedBankAccount}"
+                                        completeMethod="#{incController.completeBankAccount}"
+                                        dropdown="true" var="entityItem"
+                                        itemLabel="#{entityItem.label}"
+                                        itemValue="#{entityItem}"
+                                        converter="#{bankAccountItemConverter}"
+                                        forceSelection="true" scrollHeight="200"
+                                        minQueryLength="2" autocomplete="off" size="51">
+                            <p:ajax event="itemSelect" listener="#{incForm.formChanged}"/>
+                        </p:autoComplete>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Texte a chercher"/>
+                    </p:column>
+                    <p:column>
+                        <p:inputText value="#{incForm.containText}" style="width:100%;">
+                            <p:ajax event="change" listener="#{incForm.formChanged}"/>
+                        </p:inputText>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Valeur a set"/>
+                    </p:column>
+                    <p:column>
+                        <p:selectOneMenu value="#{incForm.valueToSet}" style="width:100%;">
+                            <f:selectItems value="#{incForm.valueToSets}" var="valueToSet"
+                                           itemLabel="#{valueToSet.label}" itemValue="#{valueToSet.value}"/>
+                            <p:ajax listener="#{incForm.valueToSetHandler}" event="itemSelect" update="valueList"/>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Valeur"/>
+                    </p:column>
+                    <p:column>
+                        <p:selectOneMenu id="valueList" value="#{incForm.value}" style="width:100%;">
+                            <f:selectItems value="#{incForm.values}" var="value"
+                                           itemLabel="#{value.label}" itemValue="#{value.value}"/>
+                            <p:ajax listener="#{incForm.formChanged}" event="itemSelect"/>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+
+            <f:facet name="footer">
+                <h:panelGroup layout="block" style="text-align:right;white-space:nowrap">
+                    <p:commandButton value="Sauvegarder" title="Sauvegarder" alt="Sauvegarder"
+                                     oncomplete="hideDialog('bankDataRuleDialogBui');"
+                                     actionListener="#{incController.saveBankDataRuleFormActionListener}"
+                                     onstart="showDialog('bankDataRuleDialogBui');"
+                                     update="bankDataRuleDialogPanel #{updateOnSave}"/>
+
+                    <p:commandButton value="Réinitialiser" title="Réinitialiser" alt="Réinitialiser"
+                                     actionListener="#{incController.resetBankDataRuleFormActionListener}"
+                                     update=":bankDataRuleDialogPanel" immediate="true" process="@this">
+                        <f:param name="skipvalidation" value="1"/>
+                        <p:resetInput target=":bankDataRuleDialogPanel"/>
+                    </p:commandButton>
+
+                    <p:commandButton value="Fermer" immediate="true"
+                                     action="#{incController.handleBankDataRuleDialogClose}"
+                                     title="Fermer" alt="Fermer">
+                        <f:param name="skipvalidation" value="1"/>
+                    </p:commandButton>
+                </h:panelGroup>
+            </f:facet>
+        </p:dialog>
+
+        <p:blockUI block="bankDataRuleDialog" widgetVar="bankDataRuleDialogBui" id="bankDataRuleDialogBui">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+            <h:outputText value="Veuillez patienter" style="white-space: nowrap;"/>
+        </p:blockUI>
+    </h:form>
+
+    <h:form id="closeConfirmationBankDataRuleDialogForm" prependId="false">
+        <p:confirmDialog id="closeConfirmationBankDataRuleDialog" header="Confirmer la fermeture"
+                         severity="alert" widgetVar="closeConfirmationBankDataRuleDialog">
+            <f:facet name="message">
+                <h:outputFormat value="Etes-vous sur de vouloir quitter le dialogue? Les données seront perdues." escape="false"/>
+            </f:facet>
+            <p:commandButton value="Oui" actionListener="#{controller.dismissBankDataRuleChangesActionListener}"
+                             oncomplete="PF('closeConfirmationBankDataRuleDialog').hide();" styleClass="ui-confirmdialog-yes"
+                             icon="pi pi-check"/>
+            <p:commandButton id="closeConfirmationBankDataRuleDialogNo" value="Non"
+                             onclick="PF('closeConfirmationBankDataRuleDialog').hide();"
+                             styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+        </p:confirmDialog>
+
+    </h:form>
+
+    <p:blockUI block="closeConfirmationBankDataRuleDialog" widgetVar="closeConfirmationBankDataRuleDialogBui"
+               id="closeConfirmationBankDataRuleDialogBui">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <h:outputText value="Veuillez patienter" style="white-space: nowrap;"/>
+    </p:blockUI>
+
+</ui:composition>

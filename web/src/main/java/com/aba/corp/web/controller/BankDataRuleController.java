@@ -3,6 +3,7 @@ package com.aba.corp.web.controller;
 import com.aba.corp.utils.Utils;
 import com.aba.corp.web.form.BankDataRuleForm;
 import com.aba.corp.web.item.EntityItem;
+import com.aba.corp.web.utils.CommonUtils;
 import dao.BankAccountDAO;
 import dao.BankAccountRuleDAO;
 import jakarta.annotation.PostConstruct;
@@ -48,6 +49,7 @@ public class BankDataRuleController extends AbstractController<BankDataRuleForm,
                 setMyBankAccounts(bankAccountDAO.findBy("userId", sessionBean.getUser().getId()));
 
                 getCrudForm().setMyBankAccounts(getMyBankAccounts());
+                getCrudForm().setDialogName("bankDataRuleDialog");
 
                 for (BankAccountRule bankAccountRule : getDatas())
                 {
@@ -102,5 +104,43 @@ public class BankDataRuleController extends AbstractController<BankDataRuleForm,
         }
 
         return suggestions;
+    }
+
+    public void handleBankDataRuleDialogClose()
+    {
+        if (getCrudForm().getFormChanged())
+        {
+            showDialog("closeConfirmationBankDataRuleDialog");
+        }
+        else
+        {
+            hideDialog("bankDataRuleDialog");
+        }
+    }
+
+    public void dismissBankDataRuleChangesActionListener()
+    {
+        hideDialog("bankDataRuleDialog");
+    }
+
+    public void setEditRuleSelectedDto(BankAccountRule selectedData)
+    {
+        setEditSelectedDto(selectedData, "bankDataRuleDialog");
+    }
+
+    @Override
+    public void addActionListener()
+    {
+        addAction("bankDataRuleDialog");
+    }
+
+    public void resetBankDataRuleFormActionListener()
+    {
+        resetForm(true);
+    }
+
+    public void saveBankDataRuleFormActionListener()
+    {
+        saveFormActionListener();
     }
 }

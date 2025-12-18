@@ -1,5 +1,6 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ public class BankAccountRule extends AbstractModel<String> implements Serializab
     private String valueToSet;
     private String value;
 
+    @JsonIgnore()
     private String accountDescription;
 
     public String getId()

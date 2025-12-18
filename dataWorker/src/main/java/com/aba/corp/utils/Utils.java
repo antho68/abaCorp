@@ -2,6 +2,8 @@ package com.aba.corp.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -12,7 +14,12 @@ import java.util.*;
 
 public class Utils
 {
-    protected static final Logger log = LogManager.getLogger(Utils.class);
+    private static final Marker API_REQUEST = MarkerManager.getMarker("API_REQUEST");
+    private static final Marker API_RESPONSE = MarkerManager.getMarker("API_RESPONSE");
+
+    protected static final Logger log = LogManager.getLogger();
+    protected static final Logger requestLogger = LogManager.getLogger("requestLogger");
+    protected static final Logger responceLogger = LogManager.getLogger("responceLogger");
 
     public static String PATTERN_DATE_GERMAN = "dd.MM.yyyy";
     public static String PATTERN_DATE_TIME_GERMAN = "dd.MM.yyyy HH:mm";
@@ -141,5 +148,53 @@ public class Utils
         }
 
         return text;
+    }
+
+    public static void logError(String message)
+    {
+        log.error(message);
+    }
+
+    public static void logWarn(String message)
+    {
+        log.warn(getLogId() + ": " + message);
+    }
+
+    public static void logError(Throwable t)
+    {
+        logError(t.getMessage(), t);
+    }
+
+    public static void logError(String message, Throwable t)
+    {
+        log.error(getLogId() + ": " + (message != null ? message : "message is null!"), t);
+    }
+
+    public static void logInfo(String message)
+    {
+        log.info(message);
+    }
+
+    public static void logDebug(String message)
+    {
+        log.debug(message);
+    }
+
+    public static void logTrace(String message)
+    {
+        log.trace(getLogId() + ": " + message);
+    }
+
+    protected static String getLogId()
+    {
+        return "LOG_ID NOT SET";
+    }
+
+    public static void logRequest(String url, String command, String json) {
+        requestLogger.debug(API_REQUEST, "Send to {} - {} : {}", url, command, json);
+    }
+
+    public static void logResponce(String url, String command, String json) {
+        responceLogger.debug(API_RESPONSE, "Send to {} - {} : {}", url, command, json);
     }
 }

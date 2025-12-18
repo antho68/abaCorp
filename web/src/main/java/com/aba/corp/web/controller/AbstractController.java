@@ -79,12 +79,17 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
 
     public void setEditSelectedDto(D selectedData)
     {
+        setEditSelectedDto(selectedData, "crudDialog");
+    }
+
+    public void setEditSelectedDto(D selectedData, String dialogName)
+    {
         setSelectedData(selectedData);
         this.crudForm.resetForm(selectedData);
         this.crudForm.setMode(CrudMode.EDIT);
 
-        showDialog("crudDialog");
-        updateOnRequestContext("crudDialogForm");
+        showDialog(dialogName);
+        updateOnRequestContext(dialogName + "Form");
     }
 
     public CF getCrudForm()
@@ -114,7 +119,7 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
         hideDialog("crudDialog");
     }
 
-    public void resetFormActionListener(ActionEvent actionEvent)
+    public void resetFormActionListener()
     {
         resetForm(true);
     }
@@ -134,27 +139,27 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
         this.saveFormAction(true);
     }
 
-    public void saveFormAction(boolean closeTheDialog)
+    public void saveFormAction(CF form, LinkedList<D> datas, LinkedList<D> filteredDatas, boolean closeTheDialog)
     {
         MessageUtils.clearMessageList();
 
-        if (getCrudForm().validateForm())
+        if (form.validateForm())
         {
             try
             {
-                getCrudForm().saveForm(getMenuId());
+                form.saveForm(getMenuId());
                 if (datas == null)
                 {
                     datas = new LinkedList<D>();
                 }
 
-                if (getCrudForm().isAddMode() || getCrudForm().isCopyMode())
+                if (form.isAddMode() || form.isCopyMode())
                 {
-                    datas.add(selectedData);
+                    datas.add(form.getSelectedData());
 
                     if (filteredDatas != null)
                     {
-                        filteredDatas.add(selectedData);
+                        filteredDatas.add(form.getSelectedData());
                     }
 
                     doAfterSave();
@@ -164,10 +169,10 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
                 {
                     if (!CommonUtils.isCollectionEmpty(datas))
                     {
-                        int index = datas.indexOf(selectedData);
+                        int index = datas.indexOf(form.getSelectedData());
                         if (index >= 0)
                         {
-                            datas.set(index, selectedData);
+                            datas.set(index, form.getSelectedData());
                         }
                     }
 
@@ -176,15 +181,15 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
 
                 if (closeTheDialog)
                 {
-                    hideDialog(getCrudForm().getDialogName());
-                    getCrudForm().clearForm();
+                    hideDialog(form.getDialogName());
+                    form.clearForm();
                 }
                 else
                 {
-                    if (getCrudForm().isAddMode() || getCrudForm().isCopyMode())
+                    if (form.isAddMode() || form.isCopyMode())
                     {
-                        getCrudForm().setMode(CrudMode.EDIT);
-                        getCrudForm().fillForm();
+                        form.setMode(CrudMode.EDIT);
+                        form.fillForm();
                     }
                 }
 
@@ -202,14 +207,24 @@ public class AbstractController<CF extends AbstractCrudForm<D>, D extends Abstra
         }
     }
 
+    public void saveFormAction(boolean closeTheDialog)
+    {
+        saveFormAction(getCrudForm(), datas, filteredDatas, closeTheDialog);
+    }
+
     public void addActionListener()
+    {
+        addAction("crudDialog");
+    }
+
+    public void addAction(String dialogName)
     {
         D data = initNewData();
         this.crudForm.resetForm(data);
         this.crudForm.setMode(CrudMode.ADD);
 
-        showDialog("crudDialog");
-        updateOnRequestContext("crudDialogForm");
+        showDialog(dialogName);
+        updateOnRequestContext(dialogName + "Form");
     }
 
     protected D initNewData()

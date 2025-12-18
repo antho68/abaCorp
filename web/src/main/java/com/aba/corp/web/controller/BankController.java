@@ -2,14 +2,19 @@ package com.aba.corp.web.controller;
 
 import com.aba.corp.ProcessorAccountItem;
 import com.aba.corp.dto.BankRecordDataDto;
+import com.aba.corp.utils.Constants;
+import com.aba.corp.web.form.BankDataRuleForm;
 import com.aba.corp.web.form.BankForm;
 import com.aba.corp.web.utils.CommonUtils;
+import com.aba.corp.web.utils.CrudMode;
+import dao.BankAccountDAO;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import model.BankAccount;
 import model.BankAccountItem;
+import model.BankAccountRule;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import utils.MessageUtils;
@@ -17,6 +22,7 @@ import utils.MessageUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -26,16 +32,43 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
 {
     @Inject
     private BankForm bankForm;
+    @Inject
+    private BankDataRuleForm bankDataRuleForm;
+    @Inject
+    private BankAccountDAO bankAccountDAO;
 
     private UploadedFile file;
     private InputStream inputStream;
 
     private Collection<BankAccountItem> decryptedBankAccountItems;
+    private Collection<BankAccount> myBankAccounts = new ArrayList<>();
+    private BankAccountRule selectedBankAccountRule;
 
     @PostConstruct
     public void init()
     {
         setCrudForm(bankForm);
+        search();
+    }
+
+    @Override
+    protected void search()
+    {
+        try
+        {
+            setMyBankAccounts(new ArrayList<>());
+
+            if (sessionBean != null && sessionBean.getUser() != null)
+            {
+                setMyBankAccounts(bankAccountDAO.findBy("userId", sessionBean.getUser().getId()));
+
+                bankDataRuleForm.setMyBankAccounts(getMyBankAccounts());
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void addFromFileActionListener()
@@ -72,7 +105,6 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
                     //TODO ABA
                     BankAccountItem bankAccountItem = new BankAccountItem();
                     bankAccountItem.setId(i.toString());
-
                     bankAccountItem.setDate(CommonUtils.getOffsetDateTimeFromDate(d.getDate()));
                     bankAccountItem.setEffectiveDate(CommonUtils.getOffsetDateTimeFromDate(d.getEffectiveDate()));
                     bankAccountItem.setDescription(d.getDescription());
@@ -83,6 +115,17 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
                     bankAccountItem.setScope(d.getScope());
 
                     bankAccountItem.setAccountId(null);
+                    if (getMyBankAccounts() != null && getMyBankAccounts().size() > 1)
+                    {
+                        BankAccount matchedBankAccount = getMyBankAccounts().stream()
+                                .filter(b -> d.getAccountCode() != null && ("10278 " + d.getAccountCode()).equals(b.getCode()))
+                                .findFirst().orElse(null);
+
+                        if (matchedBankAccount != null)
+                        {
+                            bankAccountItem.setAccountId(matchedBankAccount.getId());
+                        }
+                    }
 
                     decryptedBankAccountItems.add(bankAccountItem);
                     i++;
@@ -140,5 +183,70 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
     public void setInputStream(InputStream inputStream)
     {
         this.inputStream = inputStream;
+    }
+
+    public void setAddNewRuleData(BankAccountItem bankAccountItem)
+    {
+        bankDataRuleForm.setDialogName("bankDataRuleDialog");
+
+        BankAccountRule bankAccountRule = new BankAccountRule();
+        bankAccountRule.setAccountId(bankAccountItem.getAccountId());
+        bankAccountRule.setContainText(bankAccountItem.getDescription());
+        bankAccountRule.setValue(Constants.BankAccountRuleValueToSet.TYPE);
+        bankAccountRule.setValueToSet(null);
+        setSelectedBankAccountRule(bankAccountRule);
+
+        bankDataRuleForm.resetForm(bankAccountRule);
+        bankDataRuleForm.setMode(CrudMode.ADD);
+
+        showDialog(bankDataRuleForm.getDialogName());
+        updateOnRequestContext(bankDataRuleForm.getDialogName() + "Form");
+    }
+
+    public Collection<BankAccount> getMyBankAccounts()
+    {
+        return myBankAccounts;
+    }
+
+    public void setMyBankAccounts(Collection<BankAccount> myBankAccounts)
+    {
+        this.myBankAccounts = myBankAccounts;
+    }
+
+    public void resetBankDataRuleFormActionListener()
+    {
+        bankDataRuleForm.resetForm(getSelectedBankAccountRule());
+        MessageUtils.clearMessageList();
+    }
+
+    public BankAccountRule getSelectedBankAccountRule()
+    {
+        return selectedBankAccountRule;
+    }
+    public void setSelectedBankAccountRule(BankAccountRule selectedBankAccountRule)
+    {
+        this.selectedBankAccountRule = selectedBankAccountRule;
+    }
+
+    public void saveBankDataRuleFormActionListener()
+    {
+        saveFormActionListener();
+    }
+
+    public void handleBankDataRuleDialogClose()
+    {
+        if (getCrudForm().getFormChanged())
+        {
+            showDialog("closeConfirmationBankDataRuleDialog");
+        }
+        else
+        {
+            hideDialog("bankDataRuleDialog");
+        }
+    }
+
+    public void dismissBankDataRuleChangesActionListener()
+    {
+        hideDialog("bankDataRuleDialog");
     }
 }

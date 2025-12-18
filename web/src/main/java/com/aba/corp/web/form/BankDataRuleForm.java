@@ -52,7 +52,7 @@ public class BankDataRuleForm extends AbstractCrudForm<BankAccountRule> implemen
         setValues(new ArrayList<>());
 
         initLists();
-        valueToSetHandler();
+        valueToSetChanged();
     }
 
     private void initLists()
@@ -76,7 +76,7 @@ public class BankDataRuleForm extends AbstractCrudForm<BankAccountRule> implemen
             setAccountId(getSelectedData().getAccountId());
 
             BankAccount bankAccount = getMyBankAccounts().stream()
-                    .filter(b -> b.getCode().equals(getSelectedData().getAccountId()))
+                    .filter(b -> b.getId().equals(getSelectedData().getAccountId()))
                             .findFirst().orElse(null);
 
             setSelectedBankAccount(null);
@@ -107,11 +107,11 @@ public class BankDataRuleForm extends AbstractCrudForm<BankAccountRule> implemen
         {
             if (isAddMode() || isCopyMode())
             {
-                bankAccountRuleDAO.insert(getSelectedData());
+                setSelectedData(bankAccountRuleDAO.insert(getSelectedData()));
             }
             else
             {
-                bankAccountRuleDAO.update("id", getId(), getSelectedData());
+                setSelectedData(bankAccountRuleDAO.update("id", getId(), getSelectedData()));
             }
         }
         catch (Exception e)
@@ -193,7 +193,11 @@ public class BankDataRuleForm extends AbstractCrudForm<BankAccountRule> implemen
     public void valueToSetHandler()
     {
         formChanged();
+        valueToSetChanged();
+    }
 
+    public void valueToSetChanged()
+    {
         Collection<SelectItem> values = new ArrayList<>();
 
         switch (getValueToSet())
