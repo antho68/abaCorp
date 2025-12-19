@@ -38,6 +38,24 @@
                 <h:outputText/>
             </f:facet>
         </p:ajaxStatus>
+
+        <h:form id="dialogForm">
+            <p:dialog id="errorDialog" header="Erreur" widgetVar="errorDialog"
+                      closable="false" width="500" closeOnEscape="true" severity="" styleClass="errorDialog"
+                      responsive="true">
+
+                <p:messages id="errorDialogMessage" showDetail="false" closable="false" severity="error"
+                            escape="false" styleClass="col100" widgetVar="errorDialogMessage">
+                    <p:autoUpdate/>
+                </p:messages>
+
+                <f:facet name="footer">
+                    <p:commandButton id="confirmErrorDialog" value="Ok"
+                                     onclick="hideDialog('errorDialog')" style="background-color: red;"
+                                     actionListener="#{sessionBean.resetMessagesListener}"/>
+                </f:facet>
+            </p:dialog>
+        </h:form>
     </h:body>
 
 </f:view>

@@ -8,6 +8,7 @@ import com.aba.corp.web.form.BankForm;
 import com.aba.corp.web.utils.CommonUtils;
 import com.aba.corp.web.utils.CrudMode;
 import dao.BankAccountDAO;
+import dao.BankAccountItemDAO;
 import dao.BankAccountRuleDAO;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
@@ -23,6 +24,12 @@ import utils.MessageUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Named
@@ -37,6 +44,8 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
     private BankDataRuleForm bankDataRuleForm;
     @Inject
     private BankAccountDAO bankAccountDAO;
+    @Inject
+    private BankAccountItemDAO bankAccountItemDAO;
 
     private UploadedFile file;
     private InputStream inputStream;
@@ -128,11 +137,6 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
 
                     processRulesForItem(bankAccountItem);
 
-                    bankAccountItem.setType(d.getType());
-                    bankAccountItem.setPaymentType(d.getPaymentType());
-                    bankAccountItem.setOwner(d.getOwner());
-                    bankAccountItem.setScope(d.getScope());
-
                     decryptedBankAccountItems.add(bankAccountItem);
                     i++;
                 }
@@ -177,10 +181,37 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
 
             if (!CommonUtils.isCollectionEmpty(allRulesForAccount))
             {
+                Collection<BankAccountRule> rulesForItem = allRulesForAccount.stream()
+                        .filter(r -> bankAccountItem.getDescription().contains(r.getContainText()))
+                        .toList();
 
+                if (!CommonUtils.isCollectionEmpty(rulesForItem))
+                {
+                    for (BankAccountRule rule : rulesForItem)
+                    {
+                        switch (rule.getValueToSet())
+                        {
+                            case Constants.BankAccountRuleValueToSet.TYPE:
+                                bankAccountItem.setType(rule.getValue());
+                                bankAccountItem.setPresetByRule(true);
+                                break;
+                            case Constants.BankAccountRuleValueToSet.PAYMENT:
+                                bankAccountItem.setPaymentType(rule.getValue());
+                                bankAccountItem.setPresetByRule(true);
+                                break;
+                            case Constants.BankAccountRuleValueToSet.OWNER:
+                                bankAccountItem.setOwner(rule.getValue());
+                                bankAccountItem.setPresetByRule(true);
+                                break;
+                            case Constants.BankAccountRuleValueToSet.SCOPE:
+                                bankAccountItem.setScope(rule.getValue());
+                                bankAccountItem.setPresetByRule(true);
+                                break;
+                        }
+                    }
+                }
             }
         }
-
     }
 
     public void setDeleteImportData(BankAccountItem toDeleteBankAccountItem)
@@ -297,5 +328,26 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
     public void setBankAccountRulesMap(Map<String, LinkedList<BankAccountRule>> bankAccountRulesMap)
     {
         this.bankAccountRulesMap = bankAccountRulesMap;
+    }
+
+    public void importActionListener()
+    {
+        if (!CommonUtils.isCollectionEmpty(getDecryptedBankAccountItems()))
+        {
+            Map<String, Collection<String>> messages = bankAccountItemDAO.importData(getDecryptedBankAccountItems());
+
+            for (String k : messages.keySet())
+            {
+                for (String m : messages.get(k))
+                {
+                    System.out.println(m);
+                }
+            }
+        }
+        else
+        {
+            MessageUtils.addErrorMessage("Aucune donnée à importer.");
+            showErrorDialog();
+        }
     }
 }

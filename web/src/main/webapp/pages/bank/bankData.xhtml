@@ -100,48 +100,53 @@
                                          rowIndexVar="decryptedBankAccountItemTableIndex" rowKey="#{dto.id}"
                                          multiViewState="true" lazy="false" selectionMode="single">
 
-                                <p:column headerText="Date" width="100">
+                                <p:column headerText="Date" width="100"
+                                          styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <h:outputText value="#{dto.dateFormatted}" styleClass="col100"/>
                                 </p:column>
 
-                                <p:column headerText="Description">
+                                <p:column headerText="Description" styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:inputText value="#{dto.description}" styleClass="col100"/>
                                 </p:column>
 
-                                <p:column headerText="Valeur" width="120">
+                                <p:column headerText="Valeur" width="120"
+                                          styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:inputNumber value="#{dto.amout}" symbol=" €"
                                                    symbolPosition="s" decimalSeparator="," thousandSeparator=" "/>
                                 </p:column>
 
-                                <p:column headerText="Type" width="150">
+                                <p:column headerText="Type" width="150" styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:selectOneMenu value="#{dto.type}">
                                         <f:selectItems value="#{crudForm.itemTypes}" var="type"
                                                        itemLabel="#{type.label}" itemValue="#{type.value}"/>
                                     </p:selectOneMenu>
                                 </p:column>
 
-                                <p:column headerText="Type de paiment" width="120">
+                                <p:column headerText="Type de paiment" width="120"
+                                          styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:selectOneMenu value="#{dto.paymentType}">
-                                        <f:selectItems value="#{crudForm.paymentTypes}" var="type"
-                                                       itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                        <f:selectItems value="#{crudForm.paymentTypes}" var="paymentType"
+                                                       itemLabel="#{paymentType.label}" itemValue="#{paymentType.value}"/>
                                     </p:selectOneMenu>
                                 </p:column>
 
-                                <p:column headerText="Propiétaire" width="120">
+                                <p:column headerText="Propiétaire" width="120"
+                                          styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:selectOneMenu value="#{dto.owner}">
-                                        <f:selectItems value="#{crudForm.owners}" var="type"
-                                                       itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                        <f:selectItems value="#{crudForm.owners}" var="owner"
+                                                       itemLabel="#{owner.label}" itemValue="#{owner.value}"/>
                                     </p:selectOneMenu>
                                 </p:column>
 
-                                <p:column headerText="Scope" width="120">
+                                <p:column headerText="Scope" width="120"
+                                          styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:selectOneMenu value="#{dto.scope}">
-                                        <f:selectItems value="#{crudForm.scopes}" var="type"
-                                                       itemLabel="#{type.label}" itemValue="#{type.value}"/>
+                                        <f:selectItems value="#{crudForm.scopes}" var="scope"
+                                                       itemLabel="#{scope.label}" itemValue="#{scope.value}"/>
                                     </p:selectOneMenu>
                                 </p:column>
 
-                                <p:column width="50">
+                                <p:column width="50" styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:commandLink onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
                                                    title="Ajouter une regle" update="decryptedBankAccountItemTable">
                                         <i class="pi pi-fw pi-book" aria-hidden="true"/>

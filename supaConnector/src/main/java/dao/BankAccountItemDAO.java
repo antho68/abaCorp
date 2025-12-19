@@ -10,6 +10,13 @@ import model.BankAccountItem;
 import utils.Config;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Named("bankAccountItemDAO")
 @ApplicationScoped
@@ -47,4 +54,45 @@ public class BankAccountItemDAO extends AbstractDAODecorator<BankAccountItem> im
         return findBy("id", id).stream().findFirst().orElse(null);
     }
 
+    public Map<String, Collection<String>> importData(Collection<BankAccountItem> bankAccountItems)
+    {
+        Map<String, Collection<String>> messages = new HashMap<>();
+
+        for (BankAccountItem bankAccountItem : bankAccountItems)
+        {
+            try
+            {
+                LocalDate date = bankAccountItem.getDate().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+                String start = date.atStartOfDay(ZoneOffset.UTC).toString();          // 2025-12-19T00:00:00Z
+                String end   = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toString();
+
+                String sFilter = "?date=gte.'" + start + "'"
+                        + "&date=lt.'" + end + "'"
+                        + "&description=eq.'" + bankAccountItem.getDescription() + "'"
+                        + "&amout=eq." + bankAccountItem.getAmout();
+                
+                Boolean existingItem = findByFilter(sFilter).size() > 0;
+                if (!existingItem)
+                {
+                    insert(bankAccountItem);
+                }
+                else
+                {
+                    messages.putIfAbsent("alreadyIn", new ArrayList<>());
+                    messages.get("alreadyIn").add("Item :" + bankAccountItem.getDateFormatted() + " -> "
+                            + bankAccountItem.getDescription());
+                }
+            }
+            catch (Exception e)
+            {
+                System.out.println(e);
+                messages.putIfAbsent("errors", new ArrayList<>());
+                messages.get("errors").add("Error importing item with id " + bankAccountItem.getId() + ": " + e.getMessage());
+            }
+        }
+
+        return messages;
+    }
 }

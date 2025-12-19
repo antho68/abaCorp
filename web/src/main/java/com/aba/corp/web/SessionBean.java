@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import utils.MessageUtils;
 
 import java.io.Serializable;
 import java.util.Locale;
@@ -50,7 +51,7 @@ public class SessionBean implements Serializable
 
             FacesContext fc = FacesContext.getCurrentInstance();
             fc.getExternalContext().redirect(fc.getExternalContext().getRequestContextPath()
-                            + "/pages/loginGroup/login.xhtml");
+                    + "/pages/loginGroup/login.xhtml");
         }
         catch (Exception e)
         {
@@ -83,6 +84,7 @@ public class SessionBean implements Serializable
     {
         return this.user;
     }
+
     public void setUser(User user)
     {
         this.user = user;
@@ -92,6 +94,7 @@ public class SessionBean implements Serializable
     {
         return lastPageCalled;
     }
+
     public void setLastPageCalled(String lastPageCalled)
     {
         this.lastPageCalled = lastPageCalled;
@@ -101,8 +104,14 @@ public class SessionBean implements Serializable
     {
         return locale;
     }
+
     public void setLocale(Locale locale)
     {
         this.locale = locale;
+    }
+
+    public void resetMessagesListener()
+    {
+        MessageUtils.clearMessageList();
     }
 }

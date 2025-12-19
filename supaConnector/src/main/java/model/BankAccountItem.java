@@ -1,6 +1,7 @@
 package model;
 
 import com.aba.corp.utils.Utils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.beans.Transient;
@@ -21,6 +22,9 @@ public class BankAccountItem extends AbstractModel<String> implements Serializab
     private String paymentType;
     private String owner;
     private String scope;
+
+    @JsonIgnore
+    private Boolean presetByRule = false;
 
     // getters & setters
     public String getId()
@@ -132,5 +136,14 @@ public class BankAccountItem extends AbstractModel<String> implements Serializab
     public void setScope(String scope)
     {
         this.scope = scope;
+    }
+
+    public Boolean getPresetByRule()
+    {
+        return presetByRule;
+    }
+    public void setPresetByRule(Boolean presetByRule)
+    {
+        this.presetByRule = presetByRule;
     }
 }
