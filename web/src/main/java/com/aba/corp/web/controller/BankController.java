@@ -3,6 +3,7 @@ package com.aba.corp.web.controller;
 import com.aba.corp.ProcessorAccountItem;
 import com.aba.corp.dto.BankRecordDataDto;
 import com.aba.corp.utils.Constants;
+import com.aba.corp.utils.Utils;
 import com.aba.corp.web.form.BankDataRuleForm;
 import com.aba.corp.web.form.BankForm;
 import com.aba.corp.web.utils.CommonUtils;
@@ -24,12 +25,8 @@ import utils.MessageUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.*;
 
 @Named
@@ -73,8 +70,16 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
             if (sessionBean != null && sessionBean.getUser() != null)
             {
                 setMyBankAccounts(bankAccountDAO.findBy("userId", sessionBean.getUser().getId()));
-
                 bankDataRuleForm.setMyBankAccounts(getMyBankAccounts());
+
+                LocalDate today = new Date().toInstant()
+                        .atZone(ZoneId.of("UTC"))  // oder ZoneId.systemDefault()
+                        .toLocalDate();
+                LocalDate fromDate = today.minusMonths(3);
+
+                setDatas(bankAccountItemDAO.findByUserId(sessionBean.getUser().getId(), fromDate));
+                setDatas(new LinkedList<BankAccountItem>(getDatas().stream()
+                        .sorted(Comparator.comparing(BankAccountItem::getDate).reversed()).toList()));
             }
         }
         catch (Exception e)
@@ -108,8 +113,9 @@ public class BankController extends AbstractController<BankForm, BankAccountItem
                 for (BankRecordDataDto d : bankRecordDataDtos)
                 {
                     if (!CommonUtils.isCollectionEmpty(getDatas())
-                            && getDatas().stream().anyMatch(b -> b.getDate().equals(d.getDate())
-                            && b.getDescription().equals(d.getDescription()) && b.getAmout().equals(d.getAmout())))
+                            && getDatas().stream().anyMatch(b -> Utils.isSameDate(b.getDate(), d.getDate())
+                            && b.getDescription().equals(d.getDescription())
+                            && b.getAmout().equals(d.getAmout())))
                     {
                         continue;
                     }

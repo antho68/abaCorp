@@ -5,7 +5,6 @@ import dao.base.AbstractDAODecorator;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
-import model.BankAccount;
 import model.BankAccountItem;
 import utils.Config;
 
@@ -13,10 +12,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Named("bankAccountItemDAO")
 @ApplicationScoped
@@ -66,13 +62,13 @@ public class BankAccountItemDAO extends AbstractDAODecorator<BankAccountItem> im
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
                 String start = date.atStartOfDay(ZoneOffset.UTC).toString();          // 2025-12-19T00:00:00Z
-                String end   = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toString();
+                String end = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toString();
 
                 String sFilter = "?date=gte.'" + start + "'"
                         + "&date=lt.'" + end + "'"
                         + "&description=eq.'" + bankAccountItem.getDescription() + "'"
                         + "&amout=eq." + bankAccountItem.getAmout();
-                
+
                 Boolean existingItem = findByFilter(sFilter).size() > 0;
                 if (!existingItem)
                 {
@@ -94,5 +90,14 @@ public class BankAccountItemDAO extends AbstractDAODecorator<BankAccountItem> im
         }
 
         return messages;
+    }
+
+    public LinkedList<BankAccountItem> findByUserId(String userId, LocalDate fromDate) throws Exception
+    {
+        String start = fromDate.atStartOfDay(ZoneOffset.UTC).toString();          // 2025-12-19T00:00:00Z
+
+        String sFilter = "?select=*,...BankAccount!inner()&BankAccount.userId=eq." + userId +
+                "&date=gte.'" + start;
+        return findByFilter(sFilter);
     }
 }

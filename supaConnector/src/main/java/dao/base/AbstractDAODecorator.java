@@ -61,7 +61,11 @@ public abstract class AbstractDAODecorator<T> implements Serializable
 
     public LinkedList<T> findByFilter(String filter) throws IOException
     {
+        Utils.logRequest(getTableName(),"Find", filter);
+
         String response = client.get("/" + getTableName() + filter);
+
+        Utils.logResponce(getTableName(),"Find-Responce", response);
 
         JavaType type = mapper.getTypeFactory()
                 .constructCollectionType(LinkedList.class, getClazz());

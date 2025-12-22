@@ -19,6 +19,57 @@
                     </p:column>
                 </p:row>
             </p:panelGrid>
+
+            <p:dataTable value="#{controller.datas}" var="dto" id="dataTable" scrollHeight="700"
+                         widgetVar="dataTable" rowIndexVar="tableIndex" scrollable="true" paginator="false"
+                         multiViewState="true" lazy="false" selectionMode="single"
+                         selection="#{controller.selectedData}" rowKey="#{dto.id}">
+
+                <p:ajax event="rowDblselect" listener="#{controller.setEditRuleSelectedDto(controller.selectedData)}"
+                        resetValues="true"/>
+
+                <p:column headerText="ID" width="20">
+                    <h:outputText value="#{dto.id}"/>
+                </p:column>
+
+                <p:column headerText="Date" width="100">
+                    <h:outputText value="#{dto.dateFormatted}" styleClass="col100"/>
+                </p:column>
+
+                <p:column headerText="Description">
+                    <h:outputText value="#{dto.description}" styleClass="col100"/>
+                </p:column>
+
+                <p:column headerText="Valeur" width="120" Style="text-align: right;">
+                    <p:outputLabel value="#{dto.amout}" style="margin-right: 5px"/>
+                </p:column>
+
+                <p:column headerText="Type" width="150">
+                    <h:outputText value="#{dto.type}" converter="#{bankAccountItemTypeConverter}"/>
+                </p:column>
+
+                <p:column headerText="Type de paiment" width="120">
+                    <h:outputText value="#{dto.paymentType}" converter="#{bankAccountItemPaymentTypeConverter}"/>
+                </p:column>
+
+                <p:column headerText="Propiétaire" width="120">
+                    <h:outputText value="#{dto.owner}" converter="#{bankAccountItemOwnerConverter}"/>
+                </p:column>
+
+                <p:column headerText="Scope" width="120">
+                    <h:outputText value="#{dto.scope}" converter="#{bankAccountItemScopeConverter}"/>
+                </p:column>
+
+                <p:column styleClass="align_left" exportable="false" toggleable="false"
+                          style="width:80px">
+                    <p:commandLink onclick="selectRow('dataTable', #{tableIndex});"
+                                   title="Modifier">
+                        <i class="pi pi-fw pi-pencil" aria-hidden="true"/>
+                        <f:setPropertyActionListener value="#{dto}"
+                                                     target="#{controller.editRuleSelectedDto}"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
         </h:form>
 
         <h:form id="crudDialogForm" prependId="false">
@@ -105,7 +156,8 @@
                                     <h:outputText value="#{dto.dateFormatted}" styleClass="col100"/>
                                 </p:column>
 
-                                <p:column headerText="Description" styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
+                                <p:column headerText="Description"
+                                          styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:inputText value="#{dto.description}" styleClass="col100"/>
                                 </p:column>
 
@@ -115,7 +167,8 @@
                                                    symbolPosition="s" decimalSeparator="," thousandSeparator=" "/>
                                 </p:column>
 
-                                <p:column headerText="Type" width="150" styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
+                                <p:column headerText="Type" width="150"
+                                          styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:selectOneMenu value="#{dto.type}">
                                         <f:selectItems value="#{crudForm.itemTypes}" var="type"
                                                        itemLabel="#{type.label}" itemValue="#{type.value}"/>
@@ -126,7 +179,8 @@
                                           styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
                                     <p:selectOneMenu value="#{dto.paymentType}">
                                         <f:selectItems value="#{crudForm.paymentTypes}" var="paymentType"
-                                                       itemLabel="#{paymentType.label}" itemValue="#{paymentType.value}"/>
+                                                       itemLabel="#{paymentType.label}"
+                                                       itemValue="#{paymentType.value}"/>
                                     </p:selectOneMenu>
                                 </p:column>
 
@@ -147,14 +201,16 @@
                                 </p:column>
 
                                 <p:column width="50" styleClass="#{dto.presetByRule ? 'lightBlueDatatableRow' : ''}">
-                                    <p:commandLink onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
-                                                   title="Ajouter une regle" update="decryptedBankAccountItemTable">
+                                    <p:commandLink
+                                            onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
+                                            title="Ajouter une regle" update="decryptedBankAccountItemTable">
                                         <i class="pi pi-fw pi-book" aria-hidden="true"/>
                                         <f:setPropertyActionListener value="#{dto}"
                                                                      target="#{controller.addNewRuleData}"/>
                                     </p:commandLink>
 
-                                    <p:commandLink onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
+                                    <p:commandLink
+                                            onclick="selectRow('decryptedBankAccountItemTable', #{decryptedBankAccountItemTableIndex});"
                                             title="Supprimer" update="decryptedBankAccountItemTable">
                                         <i class="pi pi-fw pi-times" aria-hidden="true"/>
                                         <f:setPropertyActionListener value="#{dto}"

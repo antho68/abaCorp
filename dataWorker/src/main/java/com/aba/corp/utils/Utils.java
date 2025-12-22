@@ -197,4 +197,38 @@ public class Utils
     public static void logResponce(String url, String command, String json) {
         responceLogger.debug(API_RESPONSE, "Send to {} - {} : {}", url, command, json);
     }
+
+    public static boolean isSameDate(Object d1, Object d2) {
+        if (d1 == null || d2 == null) {
+            return false;
+        }
+
+        OffsetDateTime odt1 = null;
+        OffsetDateTime odt2 = null;
+
+        if (d1 instanceof Date)
+        {
+            odt1 = getOffsetDateTimeFromDate((Date) d1);
+        }
+        else if (d1 instanceof OffsetDateTime)
+        {
+            odt1 = (OffsetDateTime) d1;
+        }
+
+        if (d2 instanceof Date)
+        {
+            odt2 = getOffsetDateTimeFromDate((Date) d2);
+        }
+        else if (d2 instanceof OffsetDateTime)
+        {
+            odt2 = (OffsetDateTime) d2;
+        }
+
+        if (!odt1.isEqual(odt2))
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
